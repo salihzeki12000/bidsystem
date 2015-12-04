@@ -5,7 +5,13 @@
         <div class="col-md-8 col-md-offset-2">
             <h4>
                 View Job
+                @can('super-admin-only')
                 <a class="pull-right btn btn-sm btn-success" href="/bid/bid_job/{{ $job->id }}">Bid This Job</a>
+                @else
+                    @can('outward-user-only')
+                    <a class="pull-right btn btn-sm btn-success" href="/bid/bid_job/{{ $job->id }}">Bid This Job</a>
+                    @endcan
+                @endcan
             </h4>
             <br>
             <div class="panel panel-default">
@@ -169,12 +175,6 @@
                     @endif
                 </div>
             </div>
-
-            <div class="text-center">
-                <a href="/job" class="btn btn-default">Back</a>
-            </div>
-            <div class="clearfix"></div>
-            <br>
         </div>
     </div>
 @endsection

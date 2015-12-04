@@ -140,9 +140,8 @@
                 </div>
                 <input type="hidden" id="description_input" name="description" />
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary" style="margin-right: 15px;">
-                        Submit
-                    </button>
+                    <input type="submit" class="btn btn-primary" name="button" value="Save as draft" />
+                    <input type="submit" class="btn btn-success" name="button" value="Submit bid" />
                     <a href="/bid" class="btn btn-default">Back</a>
                 </div>
                 <div class="clearfix"></div>

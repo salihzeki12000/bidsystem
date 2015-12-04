@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Job;
+use App\RfiState;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -24,6 +26,8 @@ use App\Logistic;
 use App\Service;
 use App\CompanyLogistic;
 use App\CompanyService;
+use App\Bid;
+use Gate;
 
 class CompaniesController extends Controller
 {
@@ -50,14 +54,16 @@ class CompaniesController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Company::class);
+
         $industries = Industry::all();
         $requirements = Requirement::all();
         $potentials = Potential::all();
         $achievements = Achievement::all();
-        $logistics = Logistic::all();
-        $services = Service::all();
+//        $logistics = Logistic::all();
+//        $services = Service::all();
 
-        return view('company.create', compact('industries', 'requirements', 'potentials', 'achievements', 'logistics', 'services'));
+        return view('company.create', compact('industries', 'requirements', 'potentials', 'achievements'));
     }
 
     /**
@@ -68,6 +74,8 @@ class CompaniesController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Company::class);
+
         $refined_joined_date = date('Y-m-d', strtotime($request->input('joined_date')));
         $refined_operation_date = date('Y-m-d', strtotime($request->input('operation_date')));
 
@@ -144,71 +152,71 @@ class CompaniesController extends Controller
         SystemLog::create($system_log_array);
 
         //add new company logistic and service
-        if($request->input('category') == 'LSP'){
-            foreach($request->input('logistic') as $logistic){
-                $logistic_array = array(
-                    'company_id' => $company->id,
-                    'logistic_id' => $logistic,
-                    'status' => 'Status 1',
-                    'created_by' => \Auth::id()
-                );
-                $new_logistic = CompanyLogistic::create($logistic_array);
-                if($new_logistic){
-                    $system_log_array = array(
-                        'action_type' => 'Create',
-                        'action_description' => env('CREATE_COMPANY_LOGISTIC_SUCCESS_MESSAGE'),
-                        'perform_by' => \Auth::user()->id,
-                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                        'target_id' => $new_logistic->id,
-                        'target_category' => 'Company Logistic',
-                        'result' => 'success',
-                    );
-                }else{
-                    $system_log_array = array(
-                        'action_type' => 'Create',
-                        'action_description' => env('CREATE_COMPANY_LOGISTIC_FAIL_MESSAGE'),
-                        'perform_by' => \Auth::user()->id,
-                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                        'target_id' => null,
-                        'target_category' => 'Company Logistic',
-                        'result' => 'failed',
-                    );
-                }
-                SystemLog::create($system_log_array);
-            }
-
-            foreach($request->input('service') as $service){
-                $service_array = array(
-                    'company_id' => $company->id,
-                    'service_id' => $service,
-                    'status' => 'Status 1',
-                    'created_by' => \Auth::id()
-                );
-                $new_service = CompanyService::create($service_array);
-                if($new_service){
-                    $system_log_array = array(
-                        'action_type' => 'Create',
-                        'action_description' => env('CREATE_COMPANY_SERVICE_SUCCESS_MESSAGE'),
-                        'perform_by' => \Auth::user()->id,
-                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                        'target_id' => $new_service->id,
-                        'target_category' => 'Company Service',
-                        'result' => 'success',
-                    );
-                }else{
-                    $system_log_array = array(
-                        'action_type' => 'Create',
-                        'action_description' => env('CREATE_COMPANY_SERVICE_FAIL_MESSAGE'),
-                        'perform_by' => \Auth::user()->id,
-                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                        'target_id' => null,
-                        'target_category' => 'Company Service',
-                        'result' => 'failed',
-                    );
-                }
-                SystemLog::create($system_log_array);
-            }
-        }
+//        if($request->input('category') == 'LSP'){
+//            foreach($request->input('logistic') as $logistic){
+//                $logistic_array = array(
+//                    'company_id' => $company->id,
+//                    'logistic_id' => $logistic,
+//                    'status' => 'Status 1',
+//                    'created_by' => \Auth::id()
+//                );
+//                $new_logistic = CompanyLogistic::create($logistic_array);
+//                if($new_logistic){
+//                    $system_log_array = array(
+//                        'action_type' => 'Create',
+//                        'action_description' => env('CREATE_COMPANY_LOGISTIC_SUCCESS_MESSAGE'),
+//                        'perform_by' => \Auth::user()->id,
+//                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                        'target_id' => $new_logistic->id,
+//                        'target_category' => 'Company Logistic',
+//                        'result' => 'success',
+//                    );
+//                }else{
+//                    $system_log_array = array(
+//                        'action_type' => 'Create',
+//                        'action_description' => env('CREATE_COMPANY_LOGISTIC_FAIL_MESSAGE'),
+//                        'perform_by' => \Auth::user()->id,
+//                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                        'target_id' => null,
+//                        'target_category' => 'Company Logistic',
+//                        'result' => 'failed',
+//                    );
+//                }
+//                SystemLog::create($system_log_array);
+//            }
+//
+//            foreach($request->input('service') as $service){
+//                $service_array = array(
+//                    'company_id' => $company->id,
+//                    'service_id' => $service,
+//                    'status' => 'Status 1',
+//                    'created_by' => \Auth::id()
+//                );
+//                $new_service = CompanyService::create($service_array);
+//                if($new_service){
+//                    $system_log_array = array(
+//                        'action_type' => 'Create',
+//                        'action_description' => env('CREATE_COMPANY_SERVICE_SUCCESS_MESSAGE'),
+//                        'perform_by' => \Auth::user()->id,
+//                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                        'target_id' => $new_service->id,
+//                        'target_category' => 'Company Service',
+//                        'result' => 'success',
+//                    );
+//                }else{
+//                    $system_log_array = array(
+//                        'action_type' => 'Create',
+//                        'action_description' => env('CREATE_COMPANY_SERVICE_FAIL_MESSAGE'),
+//                        'perform_by' => \Auth::user()->id,
+//                        'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                        'target_id' => null,
+//                        'target_category' => 'Company Service',
+//                        'result' => 'failed',
+//                    );
+//                }
+//                SystemLog::create($system_log_array);
+//            }
+//        }
 
         //add new company industry
         if(!empty($request->input('industry'))){
@@ -454,36 +462,33 @@ class CompaniesController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $company = Company::with('industries','requirements','potentials','features','remarks','achievements','contacts','logistics','services')->find($id);
+        $company = Company::with('industries','requirements','potentials','features','remarks','achievements','contacts', 'files')->find($id);
+        //dd($company->toArray());
         $contact_types = Contact::all();
 
         $company->date_joined = date('d-m-Y', strtotime($company->date_joined));
         $company->date_operation_started = date('d-m-Y', strtotime($company->date_operation_started));
+        $company->credit_expiry = date('d-m-Y H:i', strtotime($company->credit_expiry));
 
         return view('company.show', compact('company', 'industries', 'requirements', 'potentials', 'achievements', 'contact_types'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $company = Company::with('industries','requirements','potentials','features','remarks','achievements','contacts','logistics','services')->find($id);
+        $company = Company::with('industries','requirements','potentials','features','remarks','achievements','contacts')->find($id);
+
+
+        $this->authorize('edit', $company);
 
         $selected_industries = array();
         $selected_requirements = array();
         $selected_potentials = array();
-        $selected_logistics = array();
-        $selected_services = array();
 
         if(!empty($company->industries)){
             foreach($company->industries as $industry){
@@ -503,17 +508,17 @@ class CompaniesController extends Controller
             }
         }
 
-        if(!empty($company->logistics)){
-            foreach($company->logistics as $logistic){
-                $selected_logistics[] = $logistic['id'];
-            }
-        }
-
-        if(!empty($company->services)){
-            foreach($company->services as $service){
-                $selected_services[] = $service['id'];
-            }
-        }
+//        if(!empty($company->logistics)){
+//            foreach($company->logistics as $logistic){
+//                $selected_logistics[] = $logistic['id'];
+//            }
+//        }
+//
+//        if(!empty($company->services)){
+//            foreach($company->services as $service){
+//                $selected_services[] = $service['id'];
+//            }
+//        }
 
         $company->date_joined = date('d-m-Y', strtotime($company->date_joined));
         $company->date_operation_started = date('d-m-Y', strtotime($company->date_operation_started));
@@ -522,11 +527,11 @@ class CompaniesController extends Controller
         $requirements = Requirement::all();
         $potentials = Potential::all();
         $achievements = Achievement::all();
-        $logistics = Logistic::all();
-        $services = Service::all();
+//        $logistics = Logistic::all();
+//        $services = Service::all();
         $contact_types = Contact::all();
 
-        return view('company.edit', compact('company', 'selected_industries', 'selected_requirements', 'selected_potentials', 'industries', 'requirements', 'potentials', 'achievements', 'contact_types', 'selected_logistics', 'selected_services', 'logistics', 'services'));
+        return view('company.edit', compact('company', 'selected_industries', 'selected_requirements', 'selected_potentials', 'industries', 'requirements', 'potentials', 'achievements', 'contact_types'));
     }
 
     /**
@@ -538,7 +543,9 @@ class CompaniesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $company = Company::with('industries','requirements','potentials','features','remarks','logistics','services')->find($id);
+        $company = Company::with('industries','requirements','potentials','features','remarks')->find($id);
+
+        $this->authorize('edit', $company);
 
         $refined_joined_date = date('Y-m-d', strtotime($request->input('joined_date')));
         $refined_operation_date = date('Y-m-d', strtotime($request->input('operation_date')));
@@ -592,137 +599,137 @@ class CompaniesController extends Controller
         SystemLog::create($system_log_array);
 
         //handle company logistic and service
-        if($request->input('category') == 'LSP'){
-            //handle company logistics for LSP
-            $previous_logistic_name_list = array();
-            if(!empty($company->logistics)){
-                foreach($company->logistics as $previous_logistic_key => $previous_logistic){
-                    $previous_logistic_name_list[$previous_logistic['pivot']['id']] = $previous_logistic['id'];
-                }
-            }
-
-            $delete_logistics_different = array_diff($previous_logistic_name_list, $request->input('logistic'));
-            $new_logistics_different = array_diff($request->input('logistic'), $previous_logistic_name_list);
-
-            if(!empty($delete_logistics_different)){
-                foreach($delete_logistics_different as $delete_logistic_key => $delete_logistic){
-                    $logistic = CompanyLogistic::find($delete_logistic_key);
-                    if($logistic){
-                        if($logistic->delete()){
-                            $system_log_array = array(
-                                'action_type' => 'Delete',
-                                'action_description' => env('DELETE_COMPANY_LOGISTIC_MESSAGE'),
-                                'perform_by' => \Auth::id(),
-                                'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                                'target_id' => $delete_logistic_key,
-                                'target_category' => 'Company Logistic',
-                                'result' => 'success',
-                            );
-                            SystemLog::create($system_log_array);
-                        }
-                    }
-                }
-            }
-
-            if(!empty($new_logistics_different)){
-                foreach($new_logistics_different as $new_logistic){
-                    $logistic_array = array(
-                        'company_id' => $company->id,
-                        'logistic_id' => $new_logistic,
-                        'status' => 'Status 1',
-                        'created_by' => \Auth::id()
-                    );
-                    $new_add_logistic = CompanyLogistic::create($logistic_array);
-                    if($new_add_logistic){
-                        $system_log_array = array(
-                            'action_type' => 'Create',
-                            'action_description' => env('CREATE_COMPANY_LOGISTIC_SUCCESS_MESSAGE'),
-                            'perform_by' => \Auth::id(),
-                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                            'target_id' => $new_add_logistic->id,
-                            'target_category' => 'Company Logistic',
-                            'result' => 'success',
-                        );
-                    }else{
-                        $system_log_array = array(
-                            'action_type' => 'Create',
-                            'action_description' => env('CREATE_COMPANY_LOGISTIC_FAIL_MESSAGE'),
-                            'perform_by' => \Auth::id(),
-                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                            'target_id' => null,
-                            'target_category' => 'Company Logistic',
-                            'result' => 'failed',
-                        );
-                    }
-                    SystemLog::create($system_log_array);
-                }
-            }
-
-            //handle company services for LSP
-            $previous_services_name_list = array();
-            if(!empty($company->services)){
-                foreach($company->services as $previous_service_key => $previous_service){
-                    $previous_services_name_list[$previous_service_key['pivot']['id']] = $previous_service['id'];
-                }
-            }
-
-            $delete_services_different = array_diff($previous_services_name_list, $request->input('service'));
-            $new_services_different = array_diff($request->input('service'), $previous_services_name_list);
-
-            if(!empty($delete_services_different)){
-                foreach($delete_services_different as $delete_service_key => $delete_service){
-                    $service = CompanyService::find($delete_service_key);
-                    if($service){
-                        if($service->delete()){
-                            $system_log_array = array(
-                                'action_type' => 'Delete',
-                                'action_description' => env('DELETE_COMPANY_SERVICE_MESSAGE'),
-                                'perform_by' => \Auth::id(),
-                                'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                                'target_id' => $delete_service_key,
-                                'target_category' => 'Company Service',
-                                'result' => 'success',
-                            );
-                            SystemLog::create($system_log_array);
-                        }
-                    }
-                }
-            }
-
-            if(!empty($new_services_different)){
-                foreach($new_services_different as $new_service){
-                    $service_array = array(
-                        'company_id' => $company->id,
-                        'service_id' => $new_service,
-                        'status' => 'Status 1',
-                        'created_by' => \Auth::id()
-                    );
-                    $new_add_service = CompanyService::create($service_array);
-                    if($new_add_service){
-                        $system_log_array = array(
-                            'action_type' => 'Create',
-                            'action_description' => env('CREATE_COMPANY_SERVICE_SUCCESS_MESSAGE'),
-                            'perform_by' => \Auth::id(),
-                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                            'target_id' => $new_add_service->id,
-                            'target_category' => 'Company Service',
-                            'result' => 'success',
-                        );
-                    }else{
-                        $system_log_array = array(
-                            'action_type' => 'Create',
-                            'action_description' => env('CREATE_COMPANY_SERVICE_FAIL_MESSAGE'),
-                            'perform_by' => \Auth::id(),
-                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
-                            'target_id' => null,
-                            'target_category' => 'Company Service',
-                            'result' => 'failed',
-                        );
-                    }
-                    SystemLog::create($system_log_array);
-                }
-            }
-        }
+//        if($request->input('category') == 'LSP'){
+//            //handle company logistics for LSP
+//            $previous_logistic_name_list = array();
+//            if(!empty($company->logistics)){
+//                foreach($company->logistics as $previous_logistic_key => $previous_logistic){
+//                    $previous_logistic_name_list[$previous_logistic['pivot']['id']] = $previous_logistic['id'];
+//                }
+//            }
+//
+//            $delete_logistics_different = array_diff($previous_logistic_name_list, $request->input('logistic'));
+//            $new_logistics_different = array_diff($request->input('logistic'), $previous_logistic_name_list);
+//
+//            if(!empty($delete_logistics_different)){
+//                foreach($delete_logistics_different as $delete_logistic_key => $delete_logistic){
+//                    $logistic = CompanyLogistic::find($delete_logistic_key);
+//                    if($logistic){
+//                        if($logistic->delete()){
+//                            $system_log_array = array(
+//                                'action_type' => 'Delete',
+//                                'action_description' => env('DELETE_COMPANY_LOGISTIC_MESSAGE'),
+//                                'perform_by' => \Auth::id(),
+//                                'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                                'target_id' => $delete_logistic_key,
+//                                'target_category' => 'Company Logistic',
+//                                'result' => 'success',
+//                            );
+//                            SystemLog::create($system_log_array);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if(!empty($new_logistics_different)){
+//                foreach($new_logistics_different as $new_logistic){
+//                    $logistic_array = array(
+//                        'company_id' => $company->id,
+//                        'logistic_id' => $new_logistic,
+//                        'status' => 'Status 1',
+//                        'created_by' => \Auth::id()
+//                    );
+//                    $new_add_logistic = CompanyLogistic::create($logistic_array);
+//                    if($new_add_logistic){
+//                        $system_log_array = array(
+//                            'action_type' => 'Create',
+//                            'action_description' => env('CREATE_COMPANY_LOGISTIC_SUCCESS_MESSAGE'),
+//                            'perform_by' => \Auth::id(),
+//                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                            'target_id' => $new_add_logistic->id,
+//                            'target_category' => 'Company Logistic',
+//                            'result' => 'success',
+//                        );
+//                    }else{
+//                        $system_log_array = array(
+//                            'action_type' => 'Create',
+//                            'action_description' => env('CREATE_COMPANY_LOGISTIC_FAIL_MESSAGE'),
+//                            'perform_by' => \Auth::id(),
+//                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                            'target_id' => null,
+//                            'target_category' => 'Company Logistic',
+//                            'result' => 'failed',
+//                        );
+//                    }
+//                    SystemLog::create($system_log_array);
+//                }
+//            }
+//
+//            //handle company services for LSP
+//            $previous_services_name_list = array();
+//            if(!empty($company->services)){
+//                foreach($company->services as $previous_service_key => $previous_service){
+//                    $previous_services_name_list[$previous_service_key['pivot']['id']] = $previous_service['id'];
+//                }
+//            }
+//
+//            $delete_services_different = array_diff($previous_services_name_list, $request->input('service'));
+//            $new_services_different = array_diff($request->input('service'), $previous_services_name_list);
+//
+//            if(!empty($delete_services_different)){
+//                foreach($delete_services_different as $delete_service_key => $delete_service){
+//                    $service = CompanyService::find($delete_service_key);
+//                    if($service){
+//                        if($service->delete()){
+//                            $system_log_array = array(
+//                                'action_type' => 'Delete',
+//                                'action_description' => env('DELETE_COMPANY_SERVICE_MESSAGE'),
+//                                'perform_by' => \Auth::id(),
+//                                'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                                'target_id' => $delete_service_key,
+//                                'target_category' => 'Company Service',
+//                                'result' => 'success',
+//                            );
+//                            SystemLog::create($system_log_array);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if(!empty($new_services_different)){
+//                foreach($new_services_different as $new_service){
+//                    $service_array = array(
+//                        'company_id' => $company->id,
+//                        'service_id' => $new_service,
+//                        'status' => 'Status 1',
+//                        'created_by' => \Auth::id()
+//                    );
+//                    $new_add_service = CompanyService::create($service_array);
+//                    if($new_add_service){
+//                        $system_log_array = array(
+//                            'action_type' => 'Create',
+//                            'action_description' => env('CREATE_COMPANY_SERVICE_SUCCESS_MESSAGE'),
+//                            'perform_by' => \Auth::id(),
+//                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                            'target_id' => $new_add_service->id,
+//                            'target_category' => 'Company Service',
+//                            'result' => 'success',
+//                        );
+//                    }else{
+//                        $system_log_array = array(
+//                            'action_type' => 'Create',
+//                            'action_description' => env('CREATE_COMPANY_SERVICE_FAIL_MESSAGE'),
+//                            'perform_by' => \Auth::id(),
+//                            'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"],
+//                            'target_id' => null,
+//                            'target_category' => 'Company Service',
+//                            'result' => 'failed',
+//                        );
+//                    }
+//                    SystemLog::create($system_log_array);
+//                }
+//            }
+//        }
 
         //handle company industry
         if(!empty($request->input('industry'))){
@@ -1182,6 +1189,8 @@ class CompaniesController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', Company::class);
+
         $company = Company::findOrFail($id);
         $company->delete = 1;
         $company->save();
@@ -1207,6 +1216,8 @@ class CompaniesController extends Controller
     public function manageCompanyFiles($id)
     {
         $company = Company::with('files')->findOrFail($id);
+
+        $this->authorize('edit', $company);
 
         //put files into different categories
         $invoice_files = array();
@@ -1412,9 +1423,57 @@ class CompaniesController extends Controller
         }
     }
 
-    public function history($id){
-        $company = Company::with('jobs.rfi_status')->with('bids.rfi_status')->find($id);
+    public function jobHistory($id){
+        $company = Company::with('jobs.rfi_status')->find($id);
+        $this->authorize('outsourcer', $company);
 
-        return view('company.history', compact('company'));
+        return view('company.job_history', compact('company'));
+    }
+
+    public function bidHistory($id){
+        $company = Company::with('bids.rfi_status')->find($id);
+        $this->authorize('lsp', $company);
+
+        return view('company.bid_history', compact('company'));
+    }
+
+    public function jobProgressTracking($company_id){
+        $company = Company::find($company_id);
+        $this->authorize('outsourcer', $company);
+
+        $jobs = Job::where('company_id', $company_id)->orderBy('updated_at', 'desc')->get();
+
+        foreach($jobs as $job_key => $job){
+            $jobs[$job_key]['bids'] = $job->validBids([6, 7, 8, 9, 10])->get();
+        }
+
+        $rfi_status = RfiState::lists('rfi_status', 'id');
+
+        return view('company.job_progress_tracking', compact('jobs', 'company', 'rfi_status'));
+    }
+
+    public function bidProgressTracking($company_id){
+        $company = Company::find($company_id);
+        $this->authorize('lsp', $company);
+
+        $bids = Bid::where('company_id', $company_id)->with('job')->get();
+        $rfi_status = RfiState::lists('rfi_status', 'id');
+
+        return view('company.bid_progress_tracking', compact('bids', 'company', 'rfi_status'));
+    }
+
+    public function receivedBids($company_id){
+        $company = Company::findOrFail($company_id);
+        $this->authorize('check_incoming_bids', $company);
+
+        $bids = Bid::join('jobs', 'jobs.id', '=', 'bids.job_id')
+            ->join('companies', 'bids.company_id', '=', 'companies.id')
+            ->select('bids.id', 'bids.job_id', 'bids.company_id', 'bids.updated_at', 'bids.closure_target_date', 'bids.status_id', 'companies.company_name')
+            ->where('bids.status_id', '=', 7)
+            ->where('jobs.company_id', '=', $company_id)
+            ->orderBy('bids.updated_at', 'desc')
+            ->get();
+
+        return view('company.received_bids', compact('bids', 'company'));
     }
 }

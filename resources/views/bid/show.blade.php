@@ -3,8 +3,56 @@
 @section('content')
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <h4>View Bid</h4>
+            <h4>Bid ID: {{ $bid->id }}</h4>
             <br>
+            @can('super-admin-only')
+            <div class="panel panel-default">
+                <div class="panel-heading">Action</div>
+                <div class="panel-body">
+                    <form class="form-inline" method="post" action="/bid/update_bid_status" id="bid_form">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="bid_id" value="{{ $bid->id }}">
+                        <label class="col-md-4 control-label">Action</label>
+                        <div class="col-md-8">
+                            <select class="form-control" name="action" id="action">
+                                @if(!in_array($bid->status_id, array_keys($rfi_status->toArray())))
+                                    <option value="" selected>Select action</option>
+                                @endif
+                                @foreach($rfi_status as $status_key => $status)
+                                    <option value="{{ $status_key }}" @if($bid->status_id == $status_key) selected @endif>{{ $status }}</option>
+                                @endforeach
+                            </select>
+                            <button class="btn btn-sm btn-primary" type="submit">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @else
+                @can('inward-user-only')
+                <div class="panel panel-default">
+                    <div class="panel-heading">Action</div>
+                    <div class="panel-body">
+                        <form class="form-inline" method="post" action="/bid/update_bid_status" id="bid_form">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="bid_id" value="{{ $bid->id }}">
+                            <label class="col-md-4 control-label">Action</label>
+                            <div class="col-md-8">
+                                <select class="form-control" name="action" id="action">
+                                    @if(!in_array($bid->status_id, array_keys($rfi_status->toArray())))
+                                        <option value="" selected>Select action</option>
+                                    @endif
+                                    @foreach($rfi_status as $status_key => $status)
+                                        <option value="{{ $status_key }}" @if($bid->status_id == $status_key) selected @endif>{{ $status }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="btn btn-sm btn-primary" type="submit">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @endcan
+            @endcan
+
             <div class="panel panel-default">
                 <div class="panel-heading">Bid Description</div>
                 <div class="panel-body">
@@ -125,11 +173,24 @@
                 </div>
             </div>
 
-            <div class="text-center">
-                <a href="/bid" class="btn btn-default">Back</a>
-            </div>
             <div class="clearfix"></div>
             <br>
         </div>
     </div>
+@endsection
+@section('script')
+    <script type="text/javascript">
+        $(function () {
+            $('#bid_form').submit(function(ev) {
+                ev.preventDefault();
+
+                var action = $('#action').val();
+                if(action != ''){
+                    this.submit();
+                }else{
+                    alert("Please select valid action.");
+                }
+            });
+        });
+    </script>
 @endsection

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\CompanyPotential;
+use App\CompanyRequirement;
+use App\JobRequirement;
 use App\RfiState;
 use App\Company;
 use Illuminate\Http\Request;
@@ -14,6 +17,9 @@ use App\JobFile;
 use App\FileType;
 use App\CountryStateTown;
 use App\Highlight;
+use App\AppointmentObjectives;
+use App\CompanyTransaction;
+use Gate;
 
 class JobsController extends Controller
 {
@@ -24,11 +30,12 @@ class JobsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
+        if (Gate::denies('globe-admin-above')) {
+            abort('403');
+        }
         $jobs = Job::where('delete', '!=', 1)->with('company')->with('rfi_status')->select('id', 'contract_term', 'company_id', 'location_id', 'status_id')->get();
 
         return view('job.index', compact('jobs'));
@@ -36,11 +43,20 @@ class JobsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
+        $this->authorize('create', Job::class);
+
+        if(\Auth::user()->company_id){
+            if(!$this->checkCreditStatus(\Auth::user()->company_id)){
+                \Session::flash('alert_message', "Sorry, your credit may has been expired or not sufficient to create new job, please contact system admin to top-up credit.");
+                return redirect('/home');
+            }
+
+            $company = Company::findOrFail(\Auth::user()->company_id);
+        }
+
         $requirements = Requirement::all();
         $potentials = Potential::all();
         $highlights = Highlight::all();
@@ -50,7 +66,7 @@ class JobsController extends Controller
             $companies = Company::where('category', 'Outsourcing')->where('delete', '0')->get();
         }
 
-        return view('job.create', compact('requirements', 'potentials', 'companies', 'locations', 'highlights'));
+        return view('job.create', compact('requirements', 'potentials', 'companies', 'locations', 'highlights', 'company'));
     }
 
     /**
@@ -61,7 +77,16 @@ class JobsController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Job::class);
         //var_dump($request->all());
+        $status = 4;
+
+        if($request->button){
+            if($request->button == 'Save as draft'){
+                $status = 1;
+            }
+        }
+
         $refined_date_date = date('Y-m-d', strtotime($request->input('date')));
         $refined_close_date = date('Y-m-d H:i', strtotime($request->input('close_date')));
         $refined_announcement_date = date('Y-m-d H:i', strtotime($request->input('announcement_date')));
@@ -73,6 +98,8 @@ class JobsController extends Controller
         }else{
             $company_id = $request->company_id;
         }
+
+        $company = Company::find($company_id);
 
         $job_array = array(
             'company_id' => $company_id,
@@ -86,8 +113,7 @@ class JobsController extends Controller
             'close_date' => $refined_close_date,
             'announcement_date' => $refined_announcement_date,
             'outsource_start_date' => $refined_outsource_date,
-            'status_id' => 1,
-            //'keyword' => $request->keyword,
+            'status_id' => $status,
             'created_by' => \Auth::id()
         );
 
@@ -111,6 +137,19 @@ class JobsController extends Controller
             $new_job->requirements()->attach($requirement_array);
             $new_job->potentials()->attach($potential_array);
             $new_job->highlights()->attach($highlight_array);
+
+            $company_transaction_array = array(
+                'company_id' => $company_id,
+                'amount' => $company->credit_unit_cost,
+                'type' => 'job',
+                'item_id' => $new_job->id,
+                'created_by' => \Auth::id()
+            );
+            $new_company_transaction = CompanyTransaction::create($company_transaction_array);
+
+            $company->credit_amount = $company->credit_amount - $company->credit_unit_cost;
+            $company->save();
+
             \Session::flash('success_message', 'Job has been saved successfully.');
             return redirect('/job');
         }
@@ -124,7 +163,7 @@ class JobsController extends Controller
      */
     public function show($id)
     {
-        $job = Job::with('company')->with('requirements')->with('potentials')->with('highlights')->with('rfi_status')->with('files')->find($id);
+        $job = Job::with('company', 'requirements', 'potentials', 'highlights', 'rfi_status', 'files')->find($id);
 
         $new_date = strtotime($job->date);
         $job->date = date('d-m-Y', $new_date);
@@ -149,7 +188,9 @@ class JobsController extends Controller
      */
     public function edit($id)
     {
-        $job = Job::with('company')->with('rfi_status')->with('files')->with('requirements')->with('potentials')->find($id);
+        $job = Job::with('company', 'rfi_status', 'files', 'requirements', 'potentials')->find($id);
+
+        $this->authorize('ownership', $job);
         $requirements = Requirement::lists('requirement', 'id');
         $potentials = Potential::lists('potential', 'id');
         $highlights = Highlight::lists('highlight', 'id');
@@ -209,6 +250,7 @@ class JobsController extends Controller
             'modified_by' => \Auth::id()
         );
         $job = Job::with('requirements')->with('potentials')->find($id);
+        $this->authorize('ownership', $job);
         $job->fill($job_array);
         if($job->save()){
             $selected_requirements = array();
@@ -280,6 +322,7 @@ class JobsController extends Controller
     public function destroy($id)
     {
         $job = Job::findOrFail($id);
+        $this->authorize('delete', $job);
         $job->delete = 1;
         $job->save();
 
@@ -290,6 +333,7 @@ class JobsController extends Controller
     public function manageJobFiles($id)
     {
         $job = Job::with('files')->findOrFail($id);
+        $this->authorize('ownership', $job);
         $file_types = FileType::all();
 
         //put files into different categories
@@ -341,6 +385,9 @@ class JobsController extends Controller
     public function saveJobFile(Request $request, $id)
     {
         $job = Job::findOrFail($id);
+
+        $this->authorize('ownership', $job);
+
         if($request->file('file')){
             $destination_path = public_path().sprintf('/uploads/%s/job_files/job_id_%s/', $job->company_id, $id);
             if($request->file('file')->isValid()){
@@ -380,6 +427,7 @@ class JobsController extends Controller
      */
     public function deleteJobFile($file_id, $company_id)
     {
+        $this->authorize('delete', Job::class);
         $job_file = JobFile::findOrFail($file_id);
         $status = false;
 
@@ -392,6 +440,119 @@ class JobsController extends Controller
         }
 
         return response()->json(['status' => $status]);
+    }
+
+    /**
+     * LSP matching.
+     */
+    public function matchLsp($job_id)
+    {
+        $job = Job::with('requirements', 'potentials')->find($job_id);
+        $this->authorize('ownership', $job);
+
+        $selected_requirements = array();
+        foreach($job->requirements as $requirement){
+            $selected_requirements[] = $requirement['id'];
+        }
+
+        $selected_potentials = array();
+        foreach($job->potentials as $potential){
+            $selected_potentials[] = $potential['id'];
+        }
+
+        $companies = Company::join('company_potential', 'companies.id', '=', 'company_potential.company_id')
+            ->join('potentials', 'company_potential.potential_id', '=', 'potentials.id')
+            ->join('company_requirement', 'companies.id', '=', 'company_requirement.company_id')
+            ->join('requirements', 'company_requirement.requirement_id', '=', 'requirements.id')
+            ->select('*')
+            ->whereIn('potentials.id', $selected_potentials)
+            ->whereIn('requirements.id', $selected_requirements)
+            ->where('companies.status', '=','Active')
+            ->groupBy('companies.id')
+            ->get();
+
+        $appointment_objectives = AppointmentObjectives::lists('app_objective', 'id');
+
+        //var_dump($companies->toArray());
+
+
+        return view('job.match', compact('job', 'companies', 'appointment_objectives'));
+    }
+
+    /**
+     * search job landing page.
+     */
+    public function searchJob()
+    {
+        $this->authorize('search', Job::class);
+        $states = CountryStateTown::groupBy('state')->lists('state');
+        $requirements = Requirement::all();
+
+        return view('job.search_job', compact('states', 'requirements'));
+    }
+
+    /**
+     * show search job result.
+     */
+    public function showSearchJobResult(Request $request)
+    {
+        $this->authorize('search', Job::class);
+        //var_dump($request->all());
+        $states = $request->location;
+
+        $locations = CountryStateTown::whereIn('state', $request->location)->lists('id');
+        $requirements = Requirement::whereIn('id', $request->requirement)->lists('requirement');
+
+        $job_requirement_pair_array = array();
+        $jobs = array();
+        $job_ids = array();
+        $jobs_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->select('job_id', 'requirement_id')->get();
+
+        //var_dump($jobs_requirements->toArray());
+
+        if(!empty($jobs_requirements)){
+            foreach($jobs_requirements as $job_requirement){
+                $job_requirement_pair_array[$job_requirement->job_id][] = $job_requirement->requirement_id;
+            }
+            
+            foreach($job_requirement_pair_array as $key => $requirement_id_list){
+                if(in_array($request->requirement, $requirement_id_list)){
+                    $job_ids[] = $key;
+                }
+            }
+
+            $job_ids = array_keys($job_requirement_pair_array);
+
+            $jobs = Job::whereIn('id', $job_ids)->whereIn('location_id', $locations)->where('jobs.status_id', 4)->with('location', 'requirements')->get();
+        }
+
+        return view('job.show_search_job_result', compact('jobs', 'states', 'requirements'));
+    }
+
+    /**
+     * Check if company has enough unexpired credit to post a job.
+     */
+    public function checkCreditStatus($id)
+    {
+        $status = false;
+
+        if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin'){
+            $status = true;
+        }else{
+            $company = Company::find($id);
+
+            if($company){
+                $expiry_timestamp = strtotime($company->credit_expiry);
+
+                if($expiry_timestamp > time()){
+                    if( ($company->credit_amount - $company->credit_unit_cost) >= 0){
+                        $status = true;
+                    }
+                }
+            }
+        }
+
+        return $status;
     }
 
 }

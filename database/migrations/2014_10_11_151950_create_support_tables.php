@@ -266,48 +266,6 @@ class CreateSupportTables extends Migration
             )
         );
 
-        Schema::create('rates', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->string('rate_category');
-            $table->text('description')->nullable();
-            $table->string('status')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('modified_by')->nullable();
-            $table->timestamps();
-        });
-
-        DB::table('rates')->insert(
-            array(
-                'rate_category' => 'Cost Efficiency',
-                'status' => 'Active'
-            )
-        );
-        DB::table('rates')->insert(
-            array(
-                'rate_category' => 'Technology Availability',
-                'status' => 'Active'
-            )
-        );
-        DB::table('rates')->insert(
-            array(
-                'rate_category' => 'Responsiveness',
-                'status' => 'Active'
-            )
-        );
-        DB::table('rates')->insert(
-            array(
-                'rate_category' => 'Assurance of Supply',
-                'status' => 'Active'
-            )
-        );
-        DB::table('rates')->insert(
-            array(
-                'rate_category' => 'Quality of Operations',
-                'status' => 'Active'
-            )
-        );
-
         Schema::create('appointment_objectives', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -468,7 +426,6 @@ class CreateSupportTables extends Migration
         Schema::drop('contacts');
         Schema::drop('country_state_towns');
         Schema::drop('achievements');
-        Schema::drop('rates');
         Schema::drop('appointment_objectives');
         Schema::drop('ticket_issues');
     }

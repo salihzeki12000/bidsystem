@@ -1,7 +1,7 @@
 @extends('app')
 @section('content')
     <div class="row">
-        <h3 class="pull-left">User List For {{ $company->company_name }}</h3>
+        <h3 class="pull-left">User List For {{ $company->company_name or 'Admin' }}</h3>
     </div>
     <hr>
     <table id="user_table" class="display">
@@ -43,7 +43,7 @@
     <div class="clearfix"></div>
     <hr>
     <div class="col-md-8 col-md-offset-2">
-        <h4>Available Quota: {{ $company->account_quota - count($users) }}</h4>
+        <h4>Available Quota: {{ $company->account_quota or 0 - count($users) }}</h4>
         <div class="panel panel-default">
             <div class="panel-heading">Create New User</div>
             <div class="panel-body">
@@ -59,9 +59,9 @@
                 @endif
                 <form class="form-horizontal" role="form" method="POST" action="/add_normal_user" enctype="multipart/form-data">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                    <input type="hidden" name="company_type" value="{{ $company->category }}" />
-                    <input type="hidden" name="company_id" value="{{ $company->id }}" />
-                    <input type="hidden" name="company_quota" value="{{ $company->account_quota - count($users) }}" />
+                    <input type="hidden" name="company_type" value="{{ $company->category or null }}" />
+                    <input type="hidden" name="company_id" value="{{ $company->id or null }}" />
+                    <input type="hidden" name="company_quota" value="{{ $company->account_quota or 0 - count($users) }}" />
 
                     <div class="form-group required">
                         <label class="col-md-4 control-label">First Name</label>

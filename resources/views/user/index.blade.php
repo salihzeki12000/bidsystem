@@ -3,7 +3,9 @@
     <div class="container-fluid">
         <div class="row">
             <h3 class="pull-left">User List</h3>
+            @can('super-admin-only')
             <h3 class="pull-right"><a href="/user/create" class="btn btn-primary">Create User</a></h3>
+            @endcan
         </div>
         <hr>
         <table id="user_table" class="display">
@@ -31,8 +33,10 @@
                         <form method="POST" action="/user/{{ $user->id }}" enctype="multipart/form-data">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <a class="btn btn-sm btn-primary" href="/user/{{ $user->id }}/edit"><span class="glyphicon glyphicon-edit"></span></a>
-                            <button class="btn btn-sm btn-danger" type="submit"><span class="glyphicon glyphicon-trash"></span></button>
+                            <a class="btn btn-sm btn-primary" href="/user/{{ $user->id }}/edit">Edit</a>
+                            @can('super-admin-only')
+                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                            @endcan
                         </form>
                     </td>
                 </tr>

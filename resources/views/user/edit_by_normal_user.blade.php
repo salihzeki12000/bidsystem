@@ -31,6 +31,15 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">User Type</label>
+                                <div class="col-md-6">
+                                    <div class="well-sm">
+                                        {{ $user->type }}
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group required">
                                 <label class="col-md-4 control-label">First Name</label>
                                 <div class="col-md-6">

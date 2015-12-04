@@ -7,17 +7,24 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Company;
+use Illuminate\Support\Facades\Gate;
 use Validator;
 use App\SystemLog;
 
 class UsersController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('view_user_list', User::class);
         $users = User::latest('updated_at')->with('company')->where('delete', 0)->get();
         return view('user.index', compact('users'));
     }
@@ -27,6 +34,7 @@ class UsersController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
         $companies = Company::get();
         return view('user.create', compact('companies'));
     }
@@ -49,8 +57,15 @@ class UsersController extends Controller
         return Validator::make($data, [
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|email|max:255',
             'password' => 'confirmed|min:6',
+        ]);
+    }
+
+    protected function validatorForEmail(array $data)
+    {
+        return Validator::make($data, [
+            'email' => 'unique:users',
         ]);
     }
 
@@ -68,6 +83,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
@@ -132,11 +148,12 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('view_user_list', User::class);
         $user = User::findOrFail($id);
         if($user->type == 'inward_group_admin' || $user->type == 'inward_group_user'){
-            $companies = Company::where('category', 'LSP')->get();
-        }elseif($user->type == 'outward_group_admin' || $user->type == 'outward_group_user'){
             $companies = Company::where('category', 'Outsourcing')->get();
+        }elseif($user->type == 'outward_group_admin' || $user->type == 'outward_group_user'){
+            $companies = Company::where('category', 'LSP')->get();
         }else{
             $companies = Company::get();
         }
@@ -149,8 +166,8 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->authorize('view_user_list', User::class);
         $validator = $this->validatorForEdit($request->all());
-
         if ($validator->fails()) {
             $this->throwValidationException(
                 $request, $validator
@@ -159,34 +176,37 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
 
+        if($user->email != $request->email){
+            $validator = $this->validatorForEmail($request->all());
+            if ($validator->fails()) {
+                $this->throwValidationException(
+                    $request, $validator
+                );
+            }else{
+                $user->email = $request->email;
+            }
+        }
+
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->type = $request->type;
+        $user->status = $request->status;
+        $user->company_id = $request->company_id;
+
         if($request->password){
-            $user_array = array(
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'type' => $request->type,
-                'status' => $request->status,
-                'company_id' => $request->company_id
-            );
-        }else{
-            $user_array = array(
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'type' => $request->type,
-                'status' => $request->status,
-                'company_id' => $request->company_id
-            );
+            $user->password = bcrypt($request->password);
         }
 
-        if($user_array['type'] == 'globe_admin'){
-            $user_array['company_id'] = null;
+        if($user->email != $request->email){
+            $user->email = $request->email;
         }
-        $user->fill($user_array);
 
-        \Session::flash('success_message', 'User has been updated successfully.');
+        if($request->type == 'globe_admin'){
+            $user->company_id = null;
+        }
+
         if($user->save()){
+            \Session::flash('success_message', 'User has been updated successfully.');
             $system_log_array = array(
                 'action_type' => 'Update',
                 'action_description' => env('UPDATE_USER_SUCCESS_MESSAGE'),
@@ -218,6 +238,7 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', User::class);
         $user = User::findOrFail($id);
         $user->delete = 1;
         if($user->save()){
@@ -252,6 +273,11 @@ class UsersController extends Controller
      */
     public function editByNormalUser($id)
     {
+        if(\Auth::user()->id != $id){
+            if(\Auth::user()->type !== 'super_admin' && \Auth::user()->type !== 'globe_admin'){
+                abort(403);
+            }
+        }
         $user = User::findOrFail($id);
         return view('user.edit_by_normal_user', compact('user'));
     }
@@ -261,6 +287,12 @@ class UsersController extends Controller
      */
     public function updateByNormalUser(Request $request, $id)
     {
+        if(\Auth::user()->id != $id){
+            if(\Auth::user()->type !== 'super_admin' && \Auth::user()->type !== 'globe_admin'){
+                abort(403);
+            }
+        }
+
         $validator = $this->validatorForEditByNormalUser($request->all());
 
         if ($validator->fails()) {
@@ -316,15 +348,13 @@ class UsersController extends Controller
     /**
      * manage group user
      */
-    public function manageGroupUser()
+    public function manageGroupUser($company_id)
     {
-//        if(\Auth::user()->type != 'inward_group_admin' || \Auth::user()->type != 'outward_group_admin'){
-//            \Session::flash('success_message', "Only group admin can access this page.");
-//            return redirect('/home');
-//        }
+        $company = Company::findOrFail($company_id);
 
-        $company = Company::find(\Auth::user()->company_id);
-        $users = User::where('company_id', \Auth::user()->company_id)->where('delete', 0)->get();
+        $this->authorize('ownership', $company);
+
+        $users = User::where('company_id', $company_id)->where('delete', 0)->get();
         return view('user.manage_group_user', compact('users', 'company'));
     }
 
@@ -342,6 +372,7 @@ class UsersController extends Controller
         }
 
         $company = Company::findOrFail($request->company_id);
+        $this->authorize('ownership', $company);
         if($company->account_quota > $request->company_quota){
             if($company->category == 'LSP'){
                 $user_type = 'outward_group_user';

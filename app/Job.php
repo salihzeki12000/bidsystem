@@ -28,6 +28,16 @@ class Job extends Model
         return $this->hasMany('App\JobFile');
     }
 
+    public function bids()
+    {
+        return $this->hasMany('App\Bid');
+    }
+
+    public function validBids($ids)
+    {
+        return $this->hasMany('App\Bid')->whereIn('status_id', $ids);
+    }
+
     public function company()
     {
         return $this->belongsTo('App\Company', 'company_id');

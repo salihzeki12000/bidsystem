@@ -174,6 +174,16 @@ class CreateCompanyProfileTables extends Migration
             $table->string('modified_by')->nullable();
             $table->timestamps();
         });
+
+        DB::table('company_requirement')->insert(
+            array(
+                'company_id' => 2,
+                'requirement_id' => 1,
+                'status' => 'Active',
+                'created_by' => 1,
+                'created_at' => DB::raw('CURRENT_TIMESTAMP')
+            )
+        );
     }
 
     /**

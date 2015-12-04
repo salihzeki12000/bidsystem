@@ -275,39 +275,39 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default" id="logistic_panel">
-                        <div class="panel-heading">Logistic</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <div class="col-md-6">
-                                    @foreach($logistics as $logistic)
-                                        <div class="checkbox">
-                                            <label>
-                                                <input class="logistic" type="checkbox" name="logistic[]" value="{{ $logistic->id }}"> {{ $logistic->name }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{--<div class="panel panel-default" id="logistic_panel">--}}
+                        {{--<div class="panel-heading">Logistic</div>--}}
+                        {{--<div class="panel-body">--}}
+                            {{--<div class="form-group">--}}
+                                {{--<div class="col-md-6">--}}
+                                    {{--@foreach($logistics as $logistic)--}}
+                                        {{--<div class="checkbox">--}}
+                                            {{--<label>--}}
+                                                {{--<input class="logistic" type="checkbox" name="logistic[]" value="{{ $logistic->id }}"> {{ $logistic->name }}--}}
+                                            {{--</label>--}}
+                                        {{--</div>--}}
+                                    {{--@endforeach--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
 
-                    <div class="panel panel-default" id="service_panel">
-                        <div class="panel-heading">Service</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <div class="col-md-6">
-                                    @foreach($services as $service)
-                                        <div class="checkbox">
-                                            <label>
-                                                <input class="service" type="checkbox" name="service[]" value="{{ $service->id }}"> {{ $service->name }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{--<div class="panel panel-default" id="service_panel">--}}
+                        {{--<div class="panel-heading">Service</div>--}}
+                        {{--<div class="panel-body">--}}
+                            {{--<div class="form-group">--}}
+                                {{--<div class="col-md-6">--}}
+                                    {{--@foreach($services as $service)--}}
+                                        {{--<div class="checkbox">--}}
+                                            {{--<label>--}}
+                                                {{--<input class="service" type="checkbox" name="service[]" value="{{ $service->id }}"> {{ $service->name }}--}}
+                                            {{--</label>--}}
+                                        {{--</div>--}}
+                                    {{--@endforeach--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
 
                     <div class="panel panel-default">
                         <div class="panel-heading">Industry</div>
@@ -480,6 +480,10 @@
             format: 'DD-MM-YYYY'
         });
 
+        $('#credit_expiry_date').datetimepicker({
+            format: 'DD-MM-YYYY HH:mm'
+        });
+
         $('#charge_gst').change(function(){
             if(this.value == 0){
                 $('#gst_percent').hide();
@@ -502,8 +506,6 @@
             ev.preventDefault();
 
             var company_category = $('#company_category').val();
-            var logistic_checked = $(".logistic:checkbox:checked").length;
-            var service_checked = $(".service:checkbox:checked").length;
             var industry_checked = $(".industry:checkbox:checked").length;
             var requirement_checked = $(".requirement:checkbox:checked").length;
             var potential_checked = $(".potential:checkbox:checked").length;
@@ -518,19 +520,7 @@
                 alert("You must check at least one potential.");
                 return false;
             }else{
-                if(company_category == 'LSP'){
-                    if(!logistic_checked){
-                        alert("You must check at least one logistic.");
-                        return false;
-                    }else if(!service_checked){
-                        alert("You must check at least one service.");
-                        return false;
-                    }else{
-                        this.submit();
-                    }
-                }else{
-                    this.submit();
-                }
+                this.submit();
             }
         });
     </script>

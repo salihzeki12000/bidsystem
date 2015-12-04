@@ -101,14 +101,6 @@
                         <div class="clearfix"></div>
 
                         <div class="form-group">
-                            <label class="col-md-4 control-label">Physical File Number</label>
-                            <div class="col-md-6">
-                                <p>{{ $company->physical_file_number }}</p>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-
-                        <div class="form-group">
                             <label class="col-md-4 control-label">Billing Period</label>
                             <div class="col-md-6">
                                 <p>{{ $company->billing_period." days" }}</p>
@@ -138,10 +130,34 @@
                         </div>
                         <div class="clearfix"></div>
 
-                        <div class="form-group required">
+                        <div class="form-group">
                             <label class="col-md-4 control-label">Account Quota</label>
                             <div class="col-md-6">
                                 <p>{{ $company->account_quota }}</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Credit Amount</label>
+                            <div class="col-md-6">
+                                <p>{{ $company->credit_amount }}</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Credit Unit Cost</label>
+                            <div class="col-md-6">
+                                <p>{{ $company->credit_unit_cost }}</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Credit Expiry Date</label>
+                            <div class="col-md-6">
+                                <p>{{ $company->credit_expiry or null }}</p>
                             </div>
                         </div>
                         <div class="clearfix"></div>
@@ -188,35 +204,35 @@
                     </div>
                 </div>
 
-                @if(count($company->logistics) > 0)
-                <div class="panel panel-default">
-                    <div class="panel-heading">Logistic</div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                @foreach($company->logistics as $logistic)
-                                    <p>{{ $logistic['name'] }}</p>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
+                {{--@if(count($company->logistics) > 0)--}}
+                {{--<div class="panel panel-default">--}}
+                    {{--<div class="panel-heading">Logistic</div>--}}
+                    {{--<div class="panel-body">--}}
+                        {{--<div class="form-group">--}}
+                            {{--<div class="col-md-12">--}}
+                                {{--@foreach($company->logistics as $logistic)--}}
+                                    {{--<p>{{ $logistic['name'] }}</p>--}}
+                                {{--@endforeach--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+                {{--@endif--}}
 
-                @if(count($company->services) > 0)
-                <div class="panel panel-default">
-                    <div class="panel-heading">Services</div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                @foreach($company->services as $service)
-                                    <p>{{ $service['name'] }}</p>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
+                {{--@if(count($company->services) > 0)--}}
+                {{--<div class="panel panel-default">--}}
+                    {{--<div class="panel-heading">Services</div>--}}
+                    {{--<div class="panel-body">--}}
+                        {{--<div class="form-group">--}}
+                            {{--<div class="col-md-12">--}}
+                                {{--@foreach($company->services as $service)--}}
+                                    {{--<p>{{ $service['name'] }}</p>--}}
+                                {{--@endforeach--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+                {{--@endif--}}
 
                 @if(count($company->industries) > 0)
                 <div class="panel panel-default">
@@ -340,9 +356,28 @@
                 </div>
                 @endif
 
-                <div class="text-center">
-                    <a href="/company" class="btn btn-default">Back</a>
-                </div>
+                @if(count($company->files) > 0)
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Files
+                        </div>
+                        <div class="panel-body" id="file_panel">
+                            @foreach($company->files as $file)
+                                <div class="col-xs-6 col-sm-2 col-md-2 text-center" id="file_panel_{{ $file->id }}">
+                                    <div class="thumbnail">
+                                        <img src="/images/file_icon.png" width="100"/>
+                                        <div class="caption">
+                                            <h5>{{ $file->file_name }}</h5>
+                                            <p>
+                                                <a class="btn btn-xs btn-success" href="{{ $file->file_path }}"><span class="glyphicon glyphicon-download"></span></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
                 <div class="clearfix"></div>
                 <br>
             </div>
@@ -488,5 +523,4 @@
             </form>
         @endforeach
     </div>
-
 @endsection

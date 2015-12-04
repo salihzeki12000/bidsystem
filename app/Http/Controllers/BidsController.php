@@ -11,9 +11,15 @@ use App\BidFile;
 use App\Job;
 use App\Company;
 use App\FileType;
+use App\CompanyTransaction;
 
 class BidsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -33,24 +39,40 @@ class BidsController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Bid::class);
+
+        if(\Auth::user()->company_id){
+            if(!$this->checkCreditStatus(\Auth::user()->company_id)){
+                \Session::flash('alert_message', "Sorry, your credit may has been expired or not sufficient to create new job, please contact system admin to top-up credit.");
+                return redirect()->back();
+            }
+
+            $company = Company::findOrFail(\Auth::user()->company_id);
+        }
+
         $jobs = Job::where('delete', '!=', 1)->lists('id');
 
         if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin'){
             $companies = Company::where('category', 'LSP')->where('delete', '0')->get();
         }
 
-        return view('bid.create', compact('jobs', 'companies'));
+        return view('bid.create', compact('jobs', 'companies', 'company'));
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Bid::class);
         //var_dump($request->all());
+        $status = 7;
+
+        if($request->button){
+            if($request->button == 'Save as draft'){
+                $status = 1;
+            }
+        }
 
         $refined_date_date = date('Y-m-d', strtotime($request->input('date')));
         $refined_rfp_date = date('Y-m-d H:i', strtotime($request->input('rfp_submission_date')));
@@ -65,6 +87,8 @@ class BidsController extends Controller
             $company_id = $request->company_id;
         }
 
+        $company = Company::find($company_id);
+
         $bid_array = array(
             'job_id' => $request->job,
             'company_id' => $company_id,
@@ -72,7 +96,7 @@ class BidsController extends Controller
             'est_budget' => $request->est_budget,
             'additional_description' => $request->description,
             'reply_to_special_request' => $request->reply_special_request,
-            'status_id' => 1,
+            'status_id' => $status,
             'sales_pic' => $request->sales_pic,
             'rfp_submission_date' => $refined_rfp_date,
             'rfq_submission_date' => $refined_rfq_date,
@@ -83,6 +107,18 @@ class BidsController extends Controller
 
         $new_bid = Bid::create($bid_array);
         if($new_bid){
+            $company_transaction_array = array(
+                'company_id' => $company_id,
+                'amount' => $company->credit_unit_cost,
+                'type' => 'bid',
+                'item_id' => $new_bid->id,
+                'created_by' => \Auth::id()
+            );
+            $new_company_transaction = CompanyTransaction::create($company_transaction_array);
+
+            $company->credit_amount = $company->credit_amount - $company->credit_unit_cost;
+            $company->save();
+
             \Session::flash('success_message', 'Bid has been saved successfully.');
             return redirect('/bid');
         }
@@ -90,13 +126,12 @@ class BidsController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $bid = Bid::with('company')->with('rfi_status')->find($id);
+
+        $rfi_status = RfiState::where('available_for_bid_outsourcer', 1)->lists('rfi_status', 'id');
 
         $new_date = strtotime($bid->date);
         $bid->date = date('d-m-Y', $new_date);
@@ -113,7 +148,7 @@ class BidsController extends Controller
         $new_closure_target_date = strtotime($bid->closure_target_date);
         $bid->closure_target_date = date('d-m-Y H:i', $new_closure_target_date);
 
-        return view('bid.show', compact('bid'));
+        return view('bid.show', compact('bid', 'rfi_status'));
     }
 
     /**
@@ -125,6 +160,9 @@ class BidsController extends Controller
     public function edit($id)
     {
         $bid = Bid::with('company')->with('rfi_status')->find($id);
+
+        $this->authorize('ownership', $bid);
+
         $jobs = Job::where('delete', '!=', 1)->lists('id');
         $status = RfiState::where('available_for_bid_lsp', 1)->get();
 
@@ -162,6 +200,9 @@ class BidsController extends Controller
         //var_dump($request->all());
 
         $bid = Bid::find($id);
+
+        $this->authorize('ownership', $bid);
+
         $refined_date_date = date('Y-m-d', strtotime($request->input('date')));
         $refined_rfp_date = date('Y-m-d H:i', strtotime($request->input('rfp_submission_date')));
         $refined_rfq_date = date('Y-m-d H:i', strtotime($request->input('rfq_submission_date')));
@@ -209,6 +250,7 @@ class BidsController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', Bid::class);
         $bid = Bid::findOrFail($id);
         $bid->delete = 1;
         $bid->save();
@@ -223,6 +265,9 @@ class BidsController extends Controller
 
     public function manageBidFiles($id){
         $bid = Bid::with('files')->findOrFail($id);
+
+        $this->authorize('ownership', $bid);
+
         $file_types = FileType::all();
 
         //put files into different categories
@@ -274,6 +319,9 @@ class BidsController extends Controller
     public function saveBidFile(Request $request, $id)
     {
         $bid = Bid::findOrFail($id);
+
+        $this->authorize('ownership', $bid);
+
         if($request->file('file')){
             $destination_path = public_path().sprintf('/uploads/%s/bid_files/bid_id_%s/', $bid->company_id, $id);
             if($request->file('file')->isValid()){
@@ -332,6 +380,7 @@ class BidsController extends Controller
      */
     public function bidJob($id)
     {
+        $this->authorize('create', Bid::class);
         $job = Job::find($id);
 
         if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin'){
@@ -339,5 +388,52 @@ class BidsController extends Controller
         }
 
         return view('bid.bid_job', compact('job', 'companies'));
+    }
+
+    /**
+     * Update bid status.
+     */
+    public function updateBidStatus(Request $request)
+    {
+        $bid = Bid::find($request->bid_id);
+
+        $this->authorize('ownership', $bid);
+
+        if($request->action){
+            $bid->status_id = $request->action;
+        }
+
+        if($bid->save()){
+            \Session::flash('success_message', 'Bid has been updated successfully.');
+        }else{
+            \Session::flash('alert_message', 'Bid cannot be updated.');
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Check if company has enough unexpired credit to post a bid.
+     */
+    public function checkCreditStatus($id)
+    {
+        $status = false;
+        if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin'){
+            $status = true;
+        }else{
+            $company = Company::find($id);
+
+            if($company){
+                $expiry_timestamp = strtotime($company->credit_expiry);
+
+                if($expiry_timestamp > time()){
+                    if( ($company->credit_amount - $company->credit_unit_cost) >= 0){
+                        $status = true;
+                    }
+                }
+            }
+        }
+
+        return $status;
     }
 }

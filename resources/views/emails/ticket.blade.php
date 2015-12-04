@@ -1,0 +1,1 @@
+A new ticket has been submitted by <b>{{ $company_name }}</b>

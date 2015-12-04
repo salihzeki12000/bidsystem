@@ -31,6 +31,9 @@ class CreateUsersTable extends Migration
             $table->integer('gst_percent')->nullable()->default(0);
             $table->enum('status', array('Draft', 'Active', 'Inactive'));
             $table->integer('account_quota')->default(2);
+            $table->integer('credit_amount')->default(0);
+            $table->integer('credit_unit_cost')->default(0);
+            $table->dateTime('credit_expiry')->nullable();
             $table->integer('delete')->default(0);
             $table->integer('created_by');
             $table->integer('modified_by')->nullable();
@@ -104,7 +107,7 @@ class CreateUsersTable extends Migration
 
         DB::table('companies')->insert(
             array(
-                'company_name' => 'Outsourcing Company',
+                'company_name' => 'Inward Company',
                 'category' => 'Outsourcing',
                 'date_joined' => '2010-10-10',
                 'date_operation_started' => '2015-10-10',
@@ -118,6 +121,9 @@ class CreateUsersTable extends Migration
                 'include_gst' => 0,
                 'status' => 'Active',
                 'account_quota' => 10,
+                'credit_amount' => 3000,
+                'credit_unit_cost' => 100,
+                'credit_expiry' => '2016-10-10 00:00:00',
                 'delete' => 0,
                 'created_by' => 1,
                 'created_at' => DB::raw('CURRENT_TIMESTAMP')
@@ -126,7 +132,7 @@ class CreateUsersTable extends Migration
 
         DB::table('companies')->insert(
             array(
-                'company_name' => 'LSP Company',
+                'company_name' => 'Outward Company',
                 'category' => 'LSP',
                 'date_joined' => '2010-10-10',
                 'date_operation_started' => '2015-10-10',
@@ -140,6 +146,9 @@ class CreateUsersTable extends Migration
                 'include_gst' => 0,
                 'status' => 'Active',
                 'account_quota' => 10,
+                'credit_amount' => 3000,
+                'credit_unit_cost' => 100,
+                'credit_expiry' => '2016-10-10 00:00:00',
                 'delete' => 0,
                 'created_by' => 1,
                 'created_at' => DB::raw('CURRENT_TIMESTAMP')
@@ -154,7 +163,7 @@ class CreateUsersTable extends Migration
                 'password' => bcrypt('111111'),
                 'type' => 'inward_group_admin',
                 'status' => 'Active',
-                'company_id' => 2,
+                'company_id' => 1,
                 'created_at' => DB::raw('CURRENT_TIMESTAMP')
             )
         );
@@ -167,7 +176,7 @@ class CreateUsersTable extends Migration
                 'password' => bcrypt('111111'),
                 'type' => 'outward_group_admin',
                 'status' => 'Active',
-                'company_id' => 1,
+                'company_id' => 2,
                 'created_at' => DB::raw('CURRENT_TIMESTAMP')
             )
         );

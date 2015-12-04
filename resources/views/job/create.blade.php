@@ -1,4 +1,4 @@
-@extends('app')
+@extends('content_with_sidebar')
 @section('style')
         <!-- WYSIWYG editor -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -6,10 +6,24 @@
 <script type="text/javascript" src="/js/summernote.min.js"></script>
 @endsection
 
+@section('sidebar')
+    @can('inward-user-only')
+    <ul class="nav nav-sidebar">
+        <h4 class="text-center">{{ $company->company_name }}</h4>
+    </ul>
+    @endcan
+    <ul class="nav nav-sidebar">
+        @can('inward-user-only')
+        <li><a href="/company/job_history/{{ $company->id }}">Job History</a></li>
+        <li><a href="/job_progress_tracking/{{ $company->id }}">Job Progress Tracking</a></li>
+        @endcan
+        <li class="active"><a href="/job/create">Create Job<span class="sr-only">(current)</span></a></li>
+    </ul>
+@endsection
+
 @section('content')
-    <div class="row">
         <form id="job_form" class="form-horizontal" role="form" method="POST" action="/job" enctype="multipart/form-data">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="row">
                 <h4>Submit New Job</h4>
                 <br>
                 <div class="panel panel-default">
@@ -185,16 +199,14 @@
                 </div>
                 <input type="hidden" id="description_input" name="description" />
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary" style="margin-right: 15px;">
-                        Submit
-                    </button>
+                    <input type="submit" class="btn btn-primary" name="button" value="Save as draft" />
+                    <input type="submit" class="btn btn-success" name="button" value="Submit bid" />
                     <a href="/job" class="btn btn-default">Back</a>
                 </div>
                 <div class="clearfix"></div>
                 <br>
             </div>
         </form>
-    </div>
 @endsection
 @section('script')
     <script type="text/javascript">

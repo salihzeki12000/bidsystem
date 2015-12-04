@@ -9,10 +9,10 @@
     <!-- Fonts -->
     <link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
     <!-- Bootstrap css -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/moment.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <!-- date time picker -->
     <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
@@ -22,6 +22,11 @@
         .form-group.required .control-label:after {
             content:"*";
             color:red;
+        }
+        .display-content{
+            padding-top: 7px;
+            margin-bottom: 0;
+            text-align: left;
         }
     </style>
     @yield('style')
@@ -34,7 +39,7 @@
 
     <!-- data table -->
     <link href='//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
-    <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/js/dataTable.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -51,7 +56,9 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li></li>
+                @can('non-system-admin')
+                    <li><a href="/company/{{ Auth::user()->company_id }}">Company Profile</a></li>
+                @endcan
             </ul>
 
             <ul class="nav navbar-nav navbar-right">

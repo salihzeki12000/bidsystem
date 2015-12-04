@@ -8,20 +8,16 @@ class Company extends Model
 {
     /**
      * The database table used by the model.
-     *
-     * @var string
      */
     protected $table = 'companies';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected $fillable = ['company_name','category', 'date_joined',
         'date_operation_started', 'registration_num', 'paid_up_capital',
         'logo', 'no_of_employees', 'annual_turnover', 'keyword', 'physical_file_number',
-        'billing_period', 'include_gst', 'gst_percent', 'status', 'account_quota',
+        'billing_period', 'include_gst', 'gst_percent', 'status', 'account_quota', 'credit_amount', 'credit_unit_cost', 'credit_expiry',
         'delete', 'created_by', 'modified_by'
     ];
 
@@ -83,9 +79,19 @@ class Company extends Model
         return $this->hasMany('App\Job');
     }
 
+    public function valid_jobs()
+    {
+        return $this->hasMany('App\Job')->whereNotIn('status_id', [1, 5]);
+    }
+
     public function bids()
     {
         return $this->hasMany('App\Bid');
+    }
+
+    public function valid_bids()
+    {
+        return $this->hasMany('App\Bid')->whereNotIn('status_id', [1, 5]);
     }
 
     public function logistics()
@@ -96,5 +102,10 @@ class Company extends Model
     public function services()
     {
         return $this->belongsToMany('App\Service', 'company_service')->withPivot('id');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany('App\Rating')->orderBy('updated_at', 'desc');
     }
 }
