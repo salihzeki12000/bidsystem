@@ -12,4 +12,6 @@ class Requirement extends Model
      * @var string
      */
     protected $table = 'requirements';
+
+    protected $fillable = ['requirement', 'status', 'created_by', 'modified_by'];
 }

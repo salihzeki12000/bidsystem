@@ -477,99 +477,92 @@
 
         <div class="clearfix"></div>
         <hr>
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
-                <a href="/company"><img src="/images/icons/Department-100.png" /> <br>Company</a>
+                <a href="/company"><img src="/images/icons/Department-100.png" width="50" height="50"/> <br>Company</a>
             </h5>
         </div>
         @can('globe-admin-above')
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
-                <a href="/user"><img src="/images/icons/User Male-100.png" /> <br>User</a>
+                <a href="/user"><img src="/images/icons/User Male-100.png" width="50" height="50"/> <br>User</a>
             </h5>
         </div>
         @endcan
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
                 @can('non-system-admin')
                     @can('inward-user-only')
-                    <a href="/company/job_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Strike-100.png" /> <br>Job</a>
+                    <a href="/company/job_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>
                     @else
-                    <a href="/search_job"><img src="/images/icons/Strike-100.png" /> <br>Job</a>
+                    <a href="/search_job"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>
                     @endcan
                 @else
-                    <a href="/job"><img src="/images/icons/Strike-100.png" /> <br>Job</a>
+                    <a href="/job"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>
                 @endcan
             </h5>
         </div>
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
                 @can('non-system-admin')
                     @can('inward-user-only')
-                    <a href="/received_bids/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" /> <br>Bid</a>
+                    <a href="/received_bids/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>
                     @else
-                    <a href="/company/bid_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" /> <br>Bid</a>
+                    <a href="/company/bid_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>
                     @endcan
                 @else
-                    <a href="/bid"><img src="/images/icons/Court Judge-100.png" /> <br>Bid</a>
+                    <a href="/bid"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>
                 @endcan
-            </h5>
-        </div>
-        <div class="col-xs-6 col-sm-3">
-            <h5 class="text-center">
-                <a href="/user/edit_user_profile/{{ \Auth::id() }}"><img src="/images/icons/Checked User-100.png" /> <br>Profile</a>
             </h5>
         </div>
         @can('non-system-admin')
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
-                <a href="/manage_group_user/{{ \Auth::user()->company_id }}"><img src="/images/icons/Conference-100.png" /> <br>Manage Group User</a>
+                <a href="/manage_group_user/{{ \Auth::user()->company_id }}"><img src="/images/icons/Conference-100.png" width="50" height="50"/> <br>Manage Group User</a>
             </h5>
         </div>
         @endcan
-        <div class="col-xs-6 col-sm-3">
-            <h5 class="text-center">
-                @can('globe-admin-above')
-                    <a href="/messages"><img src="/images/icons/Group Message-100.png" /> <br>Messages</a>
-                @else
-                    <a href="/messages/{{ \Auth::user()->company_id }}"><img src="/images/icons/Inbox-100.png" /> <br>Messages</a>
-                @endcan
-            </h5>
-        </div>
         @can('non-inward-user')
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
-                <a href="/search_job"><img src="/images/icons/Search-100.png" /> <br>Search Job</a>
+                <a href="/search_job"><img src="/images/icons/Search-100.png" width="50" height="50"/> <br>Search Job</a>
             </h5>
         </div>
         @endcan
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
                 @can('globe-admin-above')
-                    <a href="/appointments"><img src="/images/icons/Calendar-100.png" /> <br>Appointments</a>
+                    <a href="/appointments"><img src="/images/icons/Calendar-100.png" width="50" height="50"/> <br>Appointments</a>
                 @else
-                    <a href="/show_all_appointments/{{ \Auth::user()->company_id }}"><img src="/images/icons/Calendar-100.png" /> <br>Appointments</a>
+                    <a href="/show_all_appointments/{{ \Auth::user()->company_id }}"><img src="/images/icons/Calendar-100.png" width="50" height="50"/> <br>Appointments</a>
                 @endcan
             </h5>
         </div>
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
                 @can('globe-admin-above')
-                    <a href="/ticket"><img src="/images/icons/Customer Support-100.png" /> <br>Ticket</a>
+                    <a href="/ticket"><img src="/images/icons/Customer Support-100.png" width="50" height="50"/> <br>Ticket</a>
                 @else
-                       <a href="/ticket/show_my_tickets/{{ \Auth::user()->company_id }}"><img src="/images/icons/Customer Support-100.png" /> <br>Ticket</a>
+                       <a href="/ticket/show_my_tickets/{{ \Auth::user()->company_id }}"><img src="/images/icons/Customer Support-100.png" width="50" height="50"/> <br>Ticket</a>
                 @endcan
             </h5>
         </div>
-        <div class="col-xs-6 col-sm-3">
+        <div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
-                <a href="/rating/list_companies"><img src="/images/icons/Star-100.png" /> <br>Rating</a>
+                <a href="/rating/list_companies"><img src="/images/icons/Star-100.png" width="50" height="50"/> <br>Rating</a>
             </h5>
         </div>
         @can('super-admin-only')
-		<div class="col-xs-6 col-sm-3">
+		<div class="col-xs-6 col-sm-2">
             <h5 class="text-center">
-                <a href="/user_performance" ><img src="/images/icons/User Menu-100.png" /> <br>User Performance</a>
+                <a href="/user_performance" ><img src="/images/icons/User Menu-100.png" width="50" height="50"/> <br>User Performance</a>
+            </h5>
+        </div>
+        @endcan
+        @can('globe-admin-above')
+        <div class="col-xs-6 col-sm-2">
+            <h5 class="text-center">
+                <a href="/system" ><img src="/images/icons/system.png" width="50" height="50"/> <br>System</a>
             </h5>
         </div>
         @endcan

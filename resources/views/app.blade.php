@@ -56,9 +56,16 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                @can('non-system-admin')
-                    <li><a href="/company/{{ Auth::user()->company_id }}">Company Profile</a></li>
-                @endcan
+                @if (!Auth::guest())
+                    @can('non-system-admin')
+                        <li><a href="/company/{{ Auth::user()->company_id }}">Company Profile</a></li>
+                    @endcan
+                    @can('globe-admin-above')
+                        <li><a href="/messages">Messages</a></li>
+                    @else
+                        <li><a href="/messages/{{ \Auth::user()->company_id }}">Messages</a></li>
+                    @endcan
+                @endif
             </ul>
 
             <ul class="nav navbar-nav navbar-right">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\CompanyPotential;
 use App\CompanyRequirement;
+use App\Industry;
 use App\JobRequirement;
 use App\RfiState;
 use App\Company;
@@ -485,10 +486,11 @@ class JobsController extends Controller
     public function searchJob()
     {
         $this->authorize('search', Job::class);
-        $states = CountryStateTown::groupBy('state')->lists('state');
+        $locations = CountryStateTown::select('id', 'town', 'state', 'country', 'postcode')->get();
         $requirements = Requirement::all();
+        $industries = Industry::lists('industry', 'id');
 
-        return view('job.search_job', compact('states', 'requirements'));
+        return view('job.search_job', compact('locations', 'requirements', 'industries'));
     }
 
     /**
@@ -497,34 +499,59 @@ class JobsController extends Controller
     public function showSearchJobResult(Request $request)
     {
         $this->authorize('search', Job::class);
-        //var_dump($request->all());
-        $states = $request->location;
+        dd($request->all());
+        $keyword = $request->keyword;
 
-        $locations = CountryStateTown::whereIn('state', $request->location)->lists('id');
-        $requirements = Requirement::whereIn('id', $request->requirement)->lists('requirement');
+        if(!empty($keyword)){
+            if(!empty($request->location)){
 
-        $job_requirement_pair_array = array();
-        $jobs = array();
-        $job_ids = array();
-        $jobs_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->select('job_id', 'requirement_id')->get();
-
-        //var_dump($jobs_requirements->toArray());
-
-        if(!empty($jobs_requirements)){
-            foreach($jobs_requirements as $job_requirement){
-                $job_requirement_pair_array[$job_requirement->job_id][] = $job_requirement->requirement_id;
-            }
-            
-            foreach($job_requirement_pair_array as $key => $requirement_id_list){
-                if(in_array($request->requirement, $requirement_id_list)){
-                    $job_ids[] = $key;
-                }
             }
 
-            $job_ids = array_keys($job_requirement_pair_array);
+            if(!empty($request->requirements)){
 
-            $jobs = Job::whereIn('id', $job_ids)->whereIn('location_id', $locations)->where('jobs.status_id', 4)->with('location', 'requirements')->get();
+            }
+
+
+            $jobs = Job::join('job_requirement', 'jobs.id', '=', 'job_requirement.job_id')
+                ->select('*')
+                ->whereIn('job_requirement.requirement_id', $request->requirements)
+                ->whereIn('jobs.location_id', $request->location)
+                ->where('')
+                ->get();
+
+
+        }else{
+
         }
+
+
+//        $states = $request->location;
+//
+//        $locations = CountryStateTown::whereIn('state', $request->location)->lists('id');
+//        $requirements = Requirement::whereIn('id', $request->requirement)->lists('requirement');
+//
+//        $job_requirement_pair_array = array();
+//        $jobs = array();
+//        $job_ids = array();
+//        $jobs_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->select('job_id', 'requirement_id')->get();
+//
+//        //var_dump($jobs_requirements->toArray());
+//
+//        if(!empty($jobs_requirements)){
+//            foreach($jobs_requirements as $job_requirement){
+//                $job_requirement_pair_array[$job_requirement->job_id][] = $job_requirement->requirement_id;
+//            }
+//
+//            foreach($job_requirement_pair_array as $key => $requirement_id_list){
+//                if(in_array($request->requirement, $requirement_id_list)){
+//                    $job_ids[] = $key;
+//                }
+//            }
+//
+//            $job_ids = array_keys($job_requirement_pair_array);
+//
+//            $jobs = Job::whereIn('id', $job_ids)->whereIn('location_id', $locations)->where('jobs.status_id', 4)->with('location', 'requirements')->get();
+//        }
 
         return view('job.show_search_job_result', compact('jobs', 'states', 'requirements'));
     }

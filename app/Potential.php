@@ -12,4 +12,6 @@ class Potential extends Model
      * @var string
      */
     protected $table = 'potentials';
+
+    protected $fillable = ['potential', 'status', 'created_by', 'modified_by'];
 }

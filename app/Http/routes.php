@@ -116,6 +116,12 @@ Route::get('rating/show_all_ratings/{id}','RatingsController@showAllRatings');
 //user performance
 Route::get('user_performance','UserPerformancesController@userPerformance');
 
+//system drop downs
+Route::get('system','SystemConfigurationsController@index');
+Route::post('system/add','SystemConfigurationsController@add');
+Route::post('system/edit','SystemConfigurationsController@edit');
+Route::post('system/delete','SystemConfigurationsController@delete');
+
 Route::controllers([
     'password' => 'Auth\PasswordController',
 ]);

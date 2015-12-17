@@ -18,5 +18,5 @@ class CountryStateTown extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['town', 'state', 'country', 'postcode', 'status', 'created_by', 'modified_by'];
 }
