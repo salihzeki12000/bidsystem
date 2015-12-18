@@ -122,6 +122,9 @@ Route::post('system/add','SystemConfigurationsController@add');
 Route::post('system/edit','SystemConfigurationsController@edit');
 Route::post('system/delete','SystemConfigurationsController@delete');
 
+//system logs
+Route::get('log','SystemLogsController@index');
+
 Route::controllers([
     'password' => 'Auth\PasswordController',
 ]);

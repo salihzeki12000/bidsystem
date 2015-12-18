@@ -566,5 +566,12 @@
             </h5>
         </div>
         @endcan
+        @can('globe-admin-above')
+        <div class="col-xs-6 col-sm-2">
+            <h5 class="text-center">
+                <a href="/log" ><img src="/images/icons/system.png" width="50" height="50"/> <br>Transaction Logs</a>
+            </h5>
+        </div>
+        @endcan
     </div>
 @endsection

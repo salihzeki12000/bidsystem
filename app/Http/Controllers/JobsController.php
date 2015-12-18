@@ -120,6 +120,8 @@ class JobsController extends Controller
 
         $new_job = Job::create($job_array);
         if($new_job){
+            $this->insertSystemLog("Post Job", env('CREATE_JOB_SUCCESS_MESSAGE'), \Auth::id(), $new_job->id, "Job", "Success");
+
             foreach($request->requirement as $requirement){
                 $requirement_array[$requirement]['created_by'] = \Auth::id();
                 $requirement_array[$requirement]['created_at'] = (new \DateTime())->format('Y-m-d H:i:s');
@@ -254,6 +256,8 @@ class JobsController extends Controller
         $this->authorize('ownership', $job);
         $job->fill($job_array);
         if($job->save()){
+            $this->insertSystemLog("Update Job", env('UPDATE_JOB_SUCCESS_MESSAGE'), \Auth::id(), $job->id, "Job", "Success");
+
             $selected_requirements = array();
             $selected_potentials = array();
             $selected_highlights = array();

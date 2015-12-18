@@ -16,28 +16,28 @@ class SystemLogsController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Insert system log.
-     */
-    public function insertSystemLog($user_id, $type, $remark = null)
-    {
-        if($type == 'login'){
-            $log_array = array(
-                'action_type' => 'User Login',
-                'action_description' => 'User try to login to system.',
-                'perform_by' => $user_id,
-                'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"]
-            );
-            if(!empty($remark)){
-                $log_array['action_description'] = $remark;
-            }
-        }
-        if(SystemLog::create($log_array)){
-            return true;
-        }else{
-            return false;
-        }
-    }
+//    /**
+//     * Insert system log.
+//     */
+//    public function insertSystemLog($user_id, $type, $remark = null)
+//    {
+//        if($type == 'login'){
+//            $log_array = array(
+//                'action_type' => 'User Login',
+//                'action_description' => 'User try to login to system.',
+//                'perform_by' => $user_id,
+//                'ip_address_of_initiator' => $_SERVER["REMOTE_ADDR"]
+//            );
+//            if(!empty($remark)){
+//                $log_array['action_description'] = $remark;
+//            }
+//        }
+//        if(SystemLog::create($log_array)){
+//            return true;
+//        }else{
+//            return false;
+//        }
+//    }
 
     /**
      * Display a listing of the resource.
@@ -46,7 +46,9 @@ class SystemLogsController extends Controller
      */
     public function index()
     {
-        //
+        $system_logs = SystemLog::all();
+
+        return view('log.index', compact('system_logs'));
     }
 
     /**

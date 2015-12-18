@@ -61,9 +61,9 @@
                         <li><a href="/company/{{ Auth::user()->company_id }}">Company Profile</a></li>
                     @endcan
                     @can('globe-admin-above')
-                        <li><a href="/messages">Messages</a></li>
+                        <li><a href="/messages"><span class="glyphicon glyphicon-envelope"></span></a></li>
                     @else
-                        <li><a href="/messages/{{ \Auth::user()->company_id }}">Messages</a></li>
+                        <li><a href="/messages/{{ \Auth::user()->company_id }}"><span class="glyphicon glyphicon-envelope"></span></a></li>
                     @endcan
                 @endif
             </ul>
