@@ -35,15 +35,12 @@ class RatingsController extends Controller
             return redirect()->back();
         }
 
-//        if (!\Request::isMethod('post'))
-//        {
-//            \Session::flash('alert_message', "Invalid request.");
-//            return redirect()->back();
-//        }
-
         $company = Company::find($request->company_id);
+        $rating = Rating::where('rate_by', \Auth::user()->company_id)->first();
 
-        return view('rating.rate_company', compact('company'));
+        //dd($rating->toArray());
+
+        return view('rating.rate_company', compact('company', 'rating'));
     }
 
     /**
@@ -52,26 +49,47 @@ class RatingsController extends Controller
     public function saveRating(Request $request)
     {
         //var_dump($request->all());
-        $rating_array = array(
-            'company_id' => $request->company_id,
-            'c' => $request->c,
-            'e' => $request->e,
-            't' => $request->t,
-            'r' => $request->r,
-            'a' => $request->a,
-            'q' => $request->q,
-            'comment' => $request->comment,
-            'created_by' => \Auth::id()
-        );
 
-        $new_rating = Rating::create($rating_array);
+        if(!empty($request->rating_id)){
+            $rating = Rating::findOrFail($request->rating_id);
+            $rating->c = $request->c;
+            $rating->e = $request->e;
+            $rating->t = $request->t;
+            $rating->r = $request->r;
+            $rating->a = $request->a;
+            $rating->q = $request->q;
+            $rating->comment = $request->comment;
+            $rating->modified_by = \Auth::id();
 
-        if($new_rating){
-            return redirect('/rating/finish_rating');
+            if($rating->save()){
+                return redirect('/rating/finish_rating');
+            }else{
+                \Session::flash('alert_message', "Rating cannot be submitted.");
+                return redirect()->back()->withInput();
+            }
         }else{
-            \Session::flash('alert_message', "Rating cannot be submitted.");
-            return redirect()->back()->withInput();
+            $rating_array = array(
+                'company_id' => $request->company_id,
+                'c' => $request->c,
+                'e' => $request->e,
+                't' => $request->t,
+                'r' => $request->r,
+                'a' => $request->a,
+                'q' => $request->q,
+                'comment' => $request->comment,
+                'rate_by' => \Auth::user()->company_id,
+                'created_by' => \Auth::id()
+            );
+            $new_rating = Rating::create($rating_array);
+
+            if($new_rating){
+                return redirect('/rating/finish_rating');
+            }else{
+                \Session::flash('alert_message', "Rating cannot be submitted.");
+                return redirect()->back()->withInput();
+            }
         }
+
     }
 
     /**
@@ -88,6 +106,8 @@ class RatingsController extends Controller
     public function showAllRatings($id)
     {
         $company = Company::with('ratings.creator_company')->find($id);
+
+        //dd($company->toArray());
 
         $rating_averages = Rating::select(\DB::raw('avg(c) c, avg(e) e, avg(t) t, avg(r) r, avg(a) a, avg(q) q'))
             ->where('company_id', $id)

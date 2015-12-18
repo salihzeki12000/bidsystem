@@ -14,7 +14,7 @@ class Rating extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['company_id', 'c', 'e', 't', 'r', 'a', 'q', 'comment', 'moderated', 'created_by', 'modified_by'];
+    protected $fillable = ['company_id', 'c', 'e', 't', 'r', 'a', 'q', 'comment', 'moderated', 'rate_by', 'created_by', 'modified_by'];
 
     public function company()
     {
@@ -28,7 +28,6 @@ class Rating extends Model
 
     public function creator_company()
     {
-        return $this->belongsTo('App\User', 'created_by')
-            ->join('companies', 'companies.id', '=', 'users.company_id');
+        return $this->belongsTo('App\Company', 'rate_by');
     }
 }

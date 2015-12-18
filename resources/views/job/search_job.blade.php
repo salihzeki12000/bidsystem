@@ -16,7 +16,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Keyword</label>
                             <div class="col-sm-8">
-                                <input type="text" name="keyword" class="form-control" />
+                                <input type="text" name="keyword" class="form-control" id="keyword_val" value=""/>
                             </div>
                         </div>
                         <div class="clearfix"></div>
@@ -32,16 +32,16 @@
                             </div>
                         </div>
 
-                        {{--<div class="form-group">--}}
-                            {{--<label class="col-sm-4 control-label">Industries</label>--}}
-                            {{--<div class="col-sm-8">--}}
-                                {{--<select name="industry[]" class="SlectBox" multiple id="industry">--}}
-                                    {{--@foreach($industries as $industry_key => $industry)--}}
-                                        {{--<option value="{{ $industry_key }}">{{ $industry }}</option>--}}
-                                    {{--@endforeach--}}
-                                {{--</select>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Industries</label>
+                            <div class="col-sm-8">
+                                <select name="industry[]" class="SlectBox" multiple id="industry">
+                                    @foreach($industries as $industry_key => $industry)
+                                        <option value="{{ $industry_key }}">{{ $industry }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Requirements</label>
@@ -72,16 +72,13 @@
 
             $('#search_form').submit(function(ev) {
                 ev.preventDefault();
-                this.submit();
-//                if($('#state').val() == null){
-//                    alert("You must check at least one state.");
-//                    return false;
-//                }else if($('#requirement').val() == null){
-//                    alert("You must check at least one requirement.");
-//                    return false;
-//                }else{
-//                    this.submit();
-//                }
+
+                if( $('#state').val() == null && $('#industry').val() == null && $('#requirement').val() == null && $.trim($('#keyword_val').val()) == ''){
+                    alert("Your search criteria cannot be empty.");
+                    return false;
+                }else{
+                    this.submit();
+                }
             });
         });
     </script>

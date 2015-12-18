@@ -499,61 +499,114 @@ class JobsController extends Controller
     public function showSearchJobResult(Request $request)
     {
         $this->authorize('search', Job::class);
-        dd($request->all());
+        //dd($request->all());
+
+        //search term
         $keyword = $request->keyword;
+        $search_locations = array();
+        $search_industries = array();
+        $search_requirements = array();
 
-        if(!empty($keyword)){
-            if(!empty($request->location)){
-
-            }
-
-            if(!empty($request->requirements)){
-
-            }
-
-
-            $jobs = Job::join('job_requirement', 'jobs.id', '=', 'job_requirement.job_id')
-                ->select('*')
-                ->whereIn('job_requirement.requirement_id', $request->requirements)
-                ->whereIn('jobs.location_id', $request->location)
-                ->where('')
-                ->get();
-
-
-        }else{
-
+        if(!empty($request->requirement)){
+            $search_requirements = Requirement::whereIn('id', $request->requirement)->lists('requirement');
         }
 
+        if(!empty($request->industry)){
+            $search_industries = Industry::whereIn('id', $request->industry)->lists('industry');
+        }
 
-//        $states = $request->location;
-//
-//        $locations = CountryStateTown::whereIn('state', $request->location)->lists('id');
-//        $requirements = Requirement::whereIn('id', $request->requirement)->lists('requirement');
-//
-//        $job_requirement_pair_array = array();
-//        $jobs = array();
-//        $job_ids = array();
-//        $jobs_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->select('job_id', 'requirement_id')->get();
-//
-//        //var_dump($jobs_requirements->toArray());
-//
-//        if(!empty($jobs_requirements)){
-//            foreach($jobs_requirements as $job_requirement){
-//                $job_requirement_pair_array[$job_requirement->job_id][] = $job_requirement->requirement_id;
-//            }
-//
-//            foreach($job_requirement_pair_array as $key => $requirement_id_list){
-//                if(in_array($request->requirement, $requirement_id_list)){
-//                    $job_ids[] = $key;
-//                }
-//            }
-//
-//            $job_ids = array_keys($job_requirement_pair_array);
-//
-//            $jobs = Job::whereIn('id', $job_ids)->whereIn('location_id', $locations)->where('jobs.status_id', 4)->with('location', 'requirements')->get();
-//        }
+        if(!empty($request->location)){
+            $search_locations = CountryStateTown::whereIn('id', $request->location)->select('town', 'state', 'country', 'postcode')->get();
+        }
 
-        return view('job.show_search_job_result', compact('jobs', 'states', 'requirements'));
+        //pre-defined empty arrays
+        $job_ids_with_these_requirements = array();
+        $job_ids_with_these_industries = array();
+        $final_array = array();
+        $return_empty_result = false;
+        $jobs = array();
+
+
+
+        if(!empty($keyword)){
+            if(!empty($request->requirement)){
+                $job_ids_with_these_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->distinct()->lists('job_id')->toArray();
+                if(empty($job_ids_with_these_requirements)){
+                    $return_empty_result = true;
+                }
+            }
+
+            if(!empty($request->industry)){
+                $job_ids_with_these_industries = Job::join('companies', 'jobs.company_id', '=', 'companies.id')
+                    ->join('company_industry', 'company_industry.company_id', '=', 'companies.id')
+                    ->select('*')
+                    ->whereIn('company_industry.industry_id', $request->industry)
+                    ->lists('jobs.id')
+                    ->toArray();
+                if(empty($job_ids_with_these_industries)){
+                    $return_empty_result = true;
+                }
+            }
+
+            if(!$return_empty_result){
+                if(!empty($job_ids_with_these_requirements) && !empty($job_ids_with_these_industries)){
+                    $final_array = array_intersect($job_ids_with_these_requirements, $job_ids_with_these_industries);
+                }else if(!empty($job_ids_with_these_requirements) && empty($job_ids_with_these_industries)){
+                    $final_array = $job_ids_with_these_requirements;
+                }else if(!empty($job_ids_with_these_industries) && empty($job_ids_with_these_requirements)){
+                    $final_array = $job_ids_with_these_industries;
+                }
+
+                if(!empty($request->location) && !empty($final_array)){
+                    $jobs = Job::search($keyword)->whereIn('location_id', $request->location)->whereIn('id', $final_array)->with('location', 'requirements')->get();
+                }else if(!empty($request->location) && empty($final_array)){
+                    $jobs = Job::search($keyword)->whereIn('location_id', $request->location)->with('location', 'requirements')->get();
+                }else if(empty($request->location) && !empty($final_array)){
+                    $jobs = Job::search($keyword)->whereIn('id', $final_array)->with('location', 'requirements')->get();
+                }else{
+                    $jobs = Job::search($keyword)->with('location', 'requirements')->get();
+                }
+            }
+        }else{
+            if(!empty($request->requirement)){
+                $job_ids_with_these_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->distinct()->lists('job_id')->toArray();
+                if(empty($job_ids_with_these_requirements)){
+                    $return_empty_result = true;
+                }
+            }
+
+            if(!empty($request->industry)){
+                $job_ids_with_these_industries = Job::join('companies', 'jobs.company_id', '=', 'companies.id')
+                    ->join('company_industry', 'company_industry.company_id', '=', 'companies.id')
+                    ->select('*')
+                    ->whereIn('company_industry.industry_id', $request->industry)
+                    ->lists('jobs.id')
+                    ->toArray();
+                if(empty($job_ids_with_these_industries)){
+                    $return_empty_result = true;
+                }
+            }
+
+            if(!$return_empty_result){
+                if(!empty($job_ids_with_these_requirements) && !empty($job_ids_with_these_industries)){
+                    $final_array = array_intersect($job_ids_with_these_requirements, $job_ids_with_these_industries);
+                }else if(!empty($job_ids_with_these_requirements) && empty($job_ids_with_these_industries)){
+                    $final_array = $job_ids_with_these_requirements;
+                }else if(!empty($job_ids_with_these_industries) && empty($job_ids_with_these_requirements)){
+                    $final_array = $job_ids_with_these_industries;
+                }
+
+                if(!empty($request->location) && !empty($final_array)){
+                    $jobs = Job::whereIn('location_id', $request->location)->whereIn('id', $final_array)->with('location', 'requirements')->get();
+                }else if(!empty($request->location) && empty($final_array)){
+                    $jobs = Job::whereIn('location_id', $request->location)->with('location', 'requirements')->get();
+                }else if(empty($request->location) && !empty($final_array)){
+                    $jobs = Job::whereIn('id', $final_array)->with('location', 'requirements')->get();
+                }
+            }
+        }
+
+        return view('job.show_search_job_result', compact('jobs', 'search_locations', 'search_industries', 'search_requirements', 'keyword', 'return_empty_result'));
     }
 
     /**

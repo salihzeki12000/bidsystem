@@ -8,7 +8,7 @@
                     <span class="glyphicon glyphicon-ok" style="color: green"></span>
                     <small> Rating has been submitted. Thank you for your support!</small>
                 </h1>
-                <p><a class="btn btn-success" href="/home">OK</a></p>
+                <p><a class="btn btn-success" href="/rating/list_companies">OK</a></p>
             </div>
         </div>
     </div>

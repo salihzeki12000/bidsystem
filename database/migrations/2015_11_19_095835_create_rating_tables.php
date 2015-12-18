@@ -28,6 +28,11 @@ class CreateRatingTables extends Migration
             $table->integer('q');
             $table->text('comment');
             $table->tinyInteger('moderated');
+            $table->integer('rate_by')->unsigned()->nullable();
+            $table->foreign('rate_by')
+                ->references('id')->on('companies')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->integer('created_by');
             $table->integer('modified_by')->nullable();
             $table->timestamps();
