@@ -7,7 +7,7 @@
 
 @section('content')
     <div class="col-sm-6 col-sm-offset-3">
-        <p>Results for jobs containing: </p>
+        <p>Results for jobs containing: <a class="btn btn-sm btn-success pull-right" href="/search_job">Search Again</a></p>
         @if(!empty($keyword))
             <p>Keyword: <b>{{ $keyword }}</b> </p>
         @endif
@@ -40,16 +40,16 @@
         <hr>
         @if(count($jobs) > 0 && !$return_empty_result)
             @foreach($jobs as $job)
-                <p><b>Job ID: <a href="job/{{ $job->id }}">{{ $job->id }}</a></b></p>
+                <p><b><a class="btn btn-primary" href="job/{{ $job->id }}">View Job Detail</a></b></p>
                 <p>Location: {{ $job->location->town.' '.$job->location->state.' '.$job->location->country.' '.$job->location->postcode }}</p>
                 <p>Requirements:
-                @foreach($job->requirements as $count => $individual_requirement)
-                    @if($count == (count($job->requirements) - 1))
-                        {{ $individual_requirement->requirement }}
-                    @else
-                        {{ $individual_requirement->requirement.', ' }}
-                    @endif
-                @endforeach
+                    @foreach($job->requirements as $count => $individual_requirement)
+                        @if($count == (count($job->requirements) - 1))
+                            {{ $individual_requirement->requirement }}
+                        @else
+                            {{ $individual_requirement->requirement.', ' }}
+                        @endif
+                    @endforeach
                 </p>
                 <div class="clearfix"></div>
                 <hr>
