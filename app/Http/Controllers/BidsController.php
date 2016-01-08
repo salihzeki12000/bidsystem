@@ -120,7 +120,7 @@ class BidsController extends Controller
             $company->save();
 
             \Session::flash('success_message', 'Bid has been saved successfully.');
-            return redirect('/bid');
+            return redirect('/bid/manage_bid_files/'.$new_bid->id);
         }
     }
 
@@ -130,6 +130,11 @@ class BidsController extends Controller
     public function show($id)
     {
         $bid = Bid::with('company')->with('rfi_status')->find($id);
+        $job = Job::find($bid->job_id);
+
+        if (\Auth::user()->company_id != $job->company_id && \Auth::user()->company_id != $bid->company_id) {
+            abort('403');
+        }
 
         $rfi_status = RfiState::where('available_for_bid_outsourcer', 1)->lists('rfi_status', 'id');
 
@@ -267,6 +272,9 @@ class BidsController extends Controller
         $bid = Bid::with('files')->findOrFail($id);
 
         $this->authorize('ownership', $bid);
+        if(\Auth::user()->company_id){
+            $company = Company::findOrFail(\Auth::user()->company_id);
+        }
 
         $file_types = FileType::all();
 
@@ -310,7 +318,7 @@ class BidsController extends Controller
             }
         }
 
-        return view('bid.manage_bid_files', compact('bid', 'invoice_files', 'dn_files', 'cn_files', 'logo_files', 'profile_files', 'support_files', 'registration_files', 'others_files', 'file_types'));
+        return view('bid.manage_bid_files', compact('bid', 'invoice_files', 'dn_files', 'cn_files', 'logo_files', 'profile_files', 'support_files', 'registration_files', 'others_files', 'file_types', 'company'));
     }
 
     /**

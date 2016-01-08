@@ -142,7 +142,7 @@
                             <div class="form-group">
                                 <label class="col-md-4 control-label">Contract Term</label>
                                 <div class="col-md-6">
-                                    <input type="number" class="form-control" name="contract_term" value="{{ old('contract_term') }}">
+                                    <input type="text" class="form-control" name="contract_term" value="{{ old('contract_term') }}">
                                 </div>
                             </div>
 
@@ -200,8 +200,7 @@
                 <input type="hidden" id="description_input" name="description" />
                 <div class="text-center">
                     <input type="submit" class="btn btn-primary" name="button" value="Save as draft" />
-                    <input type="submit" class="btn btn-success" name="button" value="Submit bid" />
-                    <a href="/job" class="btn btn-default">Back</a>
+                    <input type="submit" class="btn btn-success" name="button" value="Submit job" />
                 </div>
                 <div class="clearfix"></div>
                 <br>

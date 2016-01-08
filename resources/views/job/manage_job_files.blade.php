@@ -1,4 +1,18 @@
-@extends('app')
+@extends('content_with_sidebar')
+@section('sidebar')
+    @can('inward-user-only')
+    <ul class="nav nav-sidebar">
+        <h4 class="text-center">{{ $company->company_name }}</h4>
+    </ul>
+    @endcan
+    <ul class="nav nav-sidebar">
+        @can('inward-user-only')
+        <li class="active"><a href="/company/job_history/{{ $company->id }}">Job History</a></li>
+        <li><a href="/job_progress_tracking/{{ $company->id }}">Job Progress Tracking</a></li>
+        @endcan
+        <li><a href="/job/create">Create Job<span class="sr-only">(current)</span></a></li>
+    </ul>
+@endsection
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -318,7 +332,7 @@
                                     <button type="submit" class="btn btn-primary" style="margin-right: 15px;">
                                         Submit
                                     </button>
-                                    <a href="/job" class="btn btn-default">Back</a>
+                                    <a href="/job/{{ $job->id }}" class="btn btn-default">Back</a>
                                 </div>
                             </div>
                         </form>

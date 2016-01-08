@@ -46,7 +46,7 @@ class SystemLogsController extends Controller
      */
     public function index()
     {
-        $system_logs = SystemLog::all();
+        $system_logs = SystemLog::orderBy('updated_at','desc')->get();
 
         return view('log.index', compact('system_logs'));
     }

@@ -68,7 +68,7 @@
                                 <div class="form-group required">
                                     <label class="col-md-4 control-label">Subject</label>
                                     <div class="col-md-6">
-                                        <input type='text' class="form-control" name="subject" required/>
+                                        <input type='text' class="form-control" name="subject" value="Bidsystem - You are invited to bid for a job" required/>
                                     </div>
                                 </div>
 
@@ -81,7 +81,7 @@
 
                                 <div class="checkbox">
                                     <label class="col-md-offset-4">
-                                        <input type="checkbox" name="create_appointment" id="show_appointment" value="1" checked> Create Appointment
+                                        <input type="checkbox" name="create_appointment" id="show_appointment" value="1"> Create Appointment
                                     </label>
                                 </div>
 
@@ -149,6 +149,8 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready( function () {
+            $('.appointment_field').hide();
+
             $('#lsp_table').DataTable({
                 "paging":   false
             });

@@ -437,7 +437,7 @@ class CompaniesController extends Controller
         }
 
         //handle company logo file
-        if(!empty($request->file('logo'))){
+        if($request->hasFile('logo')){
             $destination_path = public_path().sprintf('/uploads/%s/', $company->id);
             if($request->file('logo')->isValid()){
                 if(substr($request->file('logo')->getMimeType(), 0, 5) == 'image') {
@@ -1202,9 +1202,9 @@ class CompaniesController extends Controller
     public function generateCompanyList($type){
         $companies = null;
         if($type == 'inward_group_admin' || $type == 'inward_group_user'){
-            $companies = Company::where('category', 'LSP')->where('delete', '0')->get();
-        }elseif($type == 'outward_group_admin' || $type == 'outward_group_user'){
             $companies = Company::where('category', 'Outsourcing')->where('delete', '0')->get();
+        }elseif($type == 'outward_group_admin' || $type == 'outward_group_user'){
+            $companies = Company::where('category', 'LSP')->where('delete', '0')->get();
         }
 
         return view('company.generate_company_list', compact('companies'));

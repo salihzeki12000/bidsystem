@@ -36,7 +36,7 @@ class RatingsController extends Controller
         }
 
         $company = Company::find($request->company_id);
-        $rating = Rating::where('rate_by', \Auth::user()->company_id)->first();
+        $rating = Rating::where('rate_by', \Auth::user()->company_id)->where('company_id', $request->company_id)->first();
 
         //dd($rating->toArray());
 

@@ -30,7 +30,7 @@ class CreateJobAndFileTables extends Migration
             $table->text('special_request')->nullable();
             $table->string('existing_budget')->nullable();
             $table->tinyInteger('existing_lsp')->default(0);
-            $table->integer('contract_term')->nullable();
+            $table->string('contract_term')->nullable();
             $table->dateTime('close_date')->nullable();
             $table->dateTime('announcement_date')->nullable();
             $table->dateTime('outsource_start_date')->nullable();

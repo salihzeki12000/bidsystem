@@ -24,4 +24,5 @@ class Industry extends Model
     {
         return $this->belongsToMany('App\Company');
     }
+
 }

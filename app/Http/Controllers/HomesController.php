@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CompanyIndustry;
+use App\CountryStateTown;
 use App\Ticket;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -78,10 +79,40 @@ class HomesController extends Controller
             $new_messages = Message::where('receiver', \Auth::user()->company_id)->where('is_read', 0)->get();
         }else{
             //info for admin
-            $new_jobs = Job::with('company')->where('status_id', 4)->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
-            $new_bids = Bid::with('company')->where('status_id', 7)->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
-            $new_lsp = Company::where('category', 'LSP')->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
-            $new_outsourcer = Company::where('category', 'Outsourcing')->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
+            $industries = Industry::join('company_industry', 'industries.id', '=', 'company_industry.industry_id')
+                ->join('companies', 'company_industry.company_id', '=', 'companies.id')
+                ->join('jobs', 'companies.id', '=', 'jobs.company_id')
+                ->select(\DB::raw('count(jobs.id) as count, industries.industry'))
+                ->where('jobs.created_at', '>=', Carbon::now()->startOfMonth())
+                ->where('jobs.created_at', '<=', Carbon::now()->endOfMonth())
+                ->where('jobs.status_id', '=', 4)
+                ->groupBy('industries.industry')
+                ->get();
+
+            $sum_new_jobs = 0;
+            if(count($industries) > 0){
+                foreach ($industries as $item) {
+                    $sum_new_jobs += $item['count'];
+                }
+            }
+
+            $locations = CountryStateTown::join('jobs', 'jobs.location_id', '=', 'country_state_towns.id')
+                ->join('bids', 'bids.job_id', '=', 'jobs.id')
+                ->select(\DB::raw('count(bids.id) as count, country_state_towns.country, country_state_towns.state, country_state_towns.town'))
+                ->where('bids.created_at', '>=', Carbon::now()->startOfMonth())
+                ->where('bids.created_at', '<=', Carbon::now()->endOfMonth())
+                ->groupBy('country_state_towns.id')
+                ->get();
+
+            $sum_new_bids = 0;
+            if(count($locations) > 0){
+                foreach ($locations as $item) {
+                    $sum_new_bids += $item['count'];
+                }
+            }
+
+            $new_lsp = Company::where('delete', '0')->where('category', 'LSP')->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
+            $new_outsourcer = Company::where('delete', '0')->where('category', 'Outsourcing')->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
             $current_month = Carbon::now()->month;
 
             $new_tickets = Ticket::with('company')->where('is_attended', 0)->get();
@@ -127,7 +158,7 @@ class HomesController extends Controller
                     break;
             }
         }
-        return view('home.index', compact('new_jobs', 'new_lsp', 'new_outsourcer', 'current_month', 'new_bids', 'new_appointments_request', 'new_messages', 'incoming_bids', 'new_tickets', 'expiring_jobs', 'total_number_of_suppliers', 'new_suppliers', 'total_number_of_outsourcers', 'companies_group_by_industry', 'unbid_jobs'));
+        return view('home.index', compact('new_lsp', 'new_outsourcer', 'current_month', 'new_appointments_request', 'new_messages', 'incoming_bids', 'new_tickets', 'expiring_jobs', 'total_number_of_suppliers', 'new_suppliers', 'total_number_of_outsourcers', 'companies_group_by_industry', 'unbid_jobs', 'industries', 'locations', 'sum_new_jobs', 'sum_new_bids'));
     }
 
     /**

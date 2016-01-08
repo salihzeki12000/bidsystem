@@ -1,4 +1,18 @@
-@extends('app')
+@extends('content_with_sidebar')
+@section('sidebar')
+    @can('outward-user-only')
+    <ul class="nav nav-sidebar">
+        <h4 class="text-center">{{ $company->company_name }}</h4>
+    </ul>
+    @endcan
+    <ul class="nav nav-sidebar">
+        @can('outward-user-only')
+        <li class="active"><a href="/company/bid_history/{{ $company->id }}">Bid History</a></li>
+        <li><a href="/bid_progress_tracking/{{ $company->id }}">Bid Progress Tracking</a></li>
+        @endcan
+        <li><a href="/bid/create">Create Bid</a></li>
+    </ul>
+@endsection
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -318,7 +332,7 @@
                                     <button type="submit" class="btn btn-primary" style="margin-right: 15px;">
                                         Submit
                                     </button>
-                                    <a href="/bid" class="btn btn-default">Back</a>
+                                    <a href="/bid/{{ $bid->id }}" class="btn btn-default">Back</a>
                                 </div>
                             </div>
                         </form>

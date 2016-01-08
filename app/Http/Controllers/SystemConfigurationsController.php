@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Job;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -13,6 +14,8 @@ use App\Requirement;
 use App\TicketCategory;
 use App\AppointmentObjectives;
 use Gate;
+use App\TicketAdminEmail;
+use Carbon\Carbon;
 
 class SystemConfigurationsController extends Controller
 {
@@ -242,6 +245,8 @@ class SystemConfigurationsController extends Controller
         if (Gate::denies('globe-admin-above')) {
             abort('403');
         }
+
+        $expired_jobs = Job::with('rfi_status')->where('created_at', '<', Carbon::now()->subDays(180))->whereNotIn('status_id', [5, 6])->get();
         $industries = Industry::lists('industry', 'id');
         $highlights = Highlight::lists('highlight', 'id');
         $potentials = Potential::lists('potential', 'id');
@@ -249,62 +254,23 @@ class SystemConfigurationsController extends Controller
         $requirements = Requirement::lists('requirement', 'id');
         $ticket_categories = TicketCategory::lists('name', 'id');
         $appointment_objectives = AppointmentObjectives::all();
+        $email = TicketAdminEmail::first();
 
-        return view('system.index', compact('industries', 'highlights', 'potentials', 'locations', 'requirements', 'ticket_categories', 'appointment_objectives'));
+        return view('system.index', compact('industries', 'highlights', 'potentials', 'locations', 'requirements', 'ticket_categories', 'appointment_objectives', 'email', 'expired_jobs'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Update job status to close if created time is more than 180 days ago.
      */
-    public function create()
+    public function updateJobStatus(Request $request)
     {
-        //
-    }
+        $status = false;
+        $jobs = Job::where('created_at', '<', Carbon::now()->subDays(180))->update(['status_id' => 5]);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if($jobs){
+            $status = true;
+        }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return response()->json(['status' => $status]);
     }
 }

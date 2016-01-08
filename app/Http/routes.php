@@ -57,6 +57,7 @@ Route::post('add_normal_user', 'UsersController@addGroupUser');
 //job
 Route::resource('job','JobsController');
 Route::get('match/{id}','JobsController@matchLsp');
+Route::get('job_match/{id}','JobsController@matchJob');
 Route::get('search_job', 'JobsController@searchJob');
 Route::post('show_search_job_result', 'JobsController@showSearchJobResult');
 Route::get('job_progress_tracking/{id}','CompaniesController@jobProgressTracking');
@@ -100,9 +101,6 @@ Route::resource('credit','CompanyCreditTransactionsController');
 //ticket
 Route::resource('ticket','TicketsController');
 Route::post('ticket/save_response','TicketsController@saveResponse');
-Route::get('ticket_category','TicketsController@manageCategory');
-Route::post('ticket/save_category','TicketsController@saveCategory');
-Route::get('ticket_admin_email','TicketsController@adminEmail');
 Route::get('ticket/show_my_tickets/{id}','TicketsController@showMyTickets');
 Route::post('ticket/save_admin_email','TicketsController@saveAdminEmail');
 
@@ -121,9 +119,22 @@ Route::get('system','SystemConfigurationsController@index');
 Route::post('system/add','SystemConfigurationsController@add');
 Route::post('system/edit','SystemConfigurationsController@edit');
 Route::post('system/delete','SystemConfigurationsController@delete');
+Route::post('system/update_jobs','SystemConfigurationsController@updateJobStatus');
 
 //system logs
 Route::get('log','SystemLogsController@index');
+
+//reports
+Route::get('report/report','ReportsController@index');
+Route::post('report/job_management','ReportsController@jobManagement');
+Route::post('report/job_performance','ReportsController@jobPerformance');
+Route::post('report/compare_budget','ReportsController@compareBudget');
+Route::post('report/bid_performance','ReportsController@bidPerformance');
+Route::post('report/rating_lsp','ReportsController@ratingLsp');
+Route::get('report/outsourcing_trend','ReportsController@outsourcingTrend');
+Route::get('report/generate_csv_from_view','ReportsController@generateCsvFromView');
+Route::post('report/outsource_distribution','ReportsController@outsourceDistribution');
+Route::post('report/lsp_distribution','ReportsController@lspDistribution');
 
 Route::controllers([
     'password' => 'Auth\PasswordController',

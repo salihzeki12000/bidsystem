@@ -101,5 +101,13 @@ class AuthServiceProvider extends ServiceProvider
             }
             return $check;
         });
+
+        $gate->define('non-outward-user', function ($user) {
+            $check = false;
+            if($user->type == 'inward_group_user' || $user->type == 'inward_group_admin' || $user->type == 'globe_admin' || $user->type == 'super_admin'){
+                $check = true;
+            }
+            return $check;
+        });
     }
 }

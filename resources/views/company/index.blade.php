@@ -43,11 +43,10 @@
                             <form method="POST" action="/company/{{ $company->id }}" enctype="multipart/form-data" class="delete_company_form">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete {{ $company->company_name }}?')">Delete</button>
                             </form>
                             @endcan
                         </div>
-
                     @else
                             <a class="btn btn-sm btn-success" href="/company/{{ $company->id }}" title="View">View</a>
                     @endcan
@@ -64,12 +63,12 @@
             $('#company_table').DataTable();
 
             @can('globe-admin-above')
-            $('.delete_company_form').submit(function(ev) {
-                ev.preventDefault();
-                if (confirm('Are you sure you want to delete this company?')) {
-                    this.submit();
-                }
-            });
+//            $('.delete_company_form').submit(function(ev) {
+//                ev.preventDefault();
+//                if (confirm('Are you sure you want to delete this company?')) {
+//                    this.submit();
+//                }
+//            });
             @endcan
 
         } );

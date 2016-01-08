@@ -47,6 +47,11 @@ class Job extends Model
         return $this->hasMany('App\Bid')->whereIn('status_id', $ids);
     }
 
+    public function valid_bids()
+    {
+        return $this->hasMany('App\Bid')->whereIn('status_id', [6, 7, 8, 9, 10]);
+    }
+
     public function company()
     {
         return $this->belongsTo('App\Company', 'company_id');

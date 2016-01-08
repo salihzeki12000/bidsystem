@@ -2,6 +2,46 @@
 @section('content')
     <div class="center">
         <div class="col-sm-12">
+            <div class="panel-group" id="expired_jobs" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#expired_jobs" href="#expired_jobs_collapse" aria-expanded="true" aria-controls="expired_jobs">
+                                <h4>
+                                    Expiring Jobs
+                                </h4>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="expired_jobs_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            @if(count($expired_jobs) > 0)
+                                <a class="btn btn-sm btn-primary" id="job">Update Status</a>
+                                <div class="clearfix"></div>
+                                <br>
+                                <table class="table">
+                                    <tr>
+                                        <th>Job ID</th>
+                                        <th>Status</th>
+                                        <th>Created At</th>
+                                    </tr>
+                                    @foreach($expired_jobs as $job_key => $job)
+                                        <tr>
+                                            <td>{{ $job->id }}</td>
+                                            <td>{{ $job->rfi_status->rfi_status }}</td>
+                                            <td>{{ $job->created_at }}</td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            @else
+                                <h4>No expiring jobs.</h4>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
             <div class="panel-group" id="industry" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="headingOne">
@@ -246,6 +286,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-sm-12">
+            <div class="panel-group" id="support" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#support" href="#support_collapse" aria-expanded="true" aria-controls="support_collapse">
+                                <h4>
+                                    Support Email
+                                </h4>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="support_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body support">
+                            <input id="email_val" name="email" type="email" value="{{ $email->email or null }}">
+                            <input id="email_id" name="email_id" type="hidden" value="{{ $email->id or null }}">
+                            <a class="btn btn-sm btn-primary" id="edit_email" data-id="{{ $email->id or null }}">Save</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 @section('script')
@@ -380,6 +443,44 @@
                             $('#'+type+'_div_'+response.id).append(delete_btn);
                         }else{
                             alert('Unknown error, cannot save value.');
+                        }
+                    }
+                });
+            });
+
+            $('#edit_email').click(function(){
+                var email = $('#email_val').val();
+                var id = $('#email_id').val();
+
+                var data = {'_method': 'POST',  '_token': "{{ csrf_token() }}", 'id':id, 'value':email};
+                $.ajax({
+                    type: "POST",
+                    data: data,
+                    url: '/ticket/save_admin_email',
+                    success: function(response)
+                    {
+                        if(response.status){
+                            tempAlert("Saved!",2000);
+                        }else{
+                            alert('Unknown error, cannot save value.');
+                        }
+                    }
+                });
+            });
+
+            $('body').on('click', 'a#job', function() {
+                var data = {'_method': 'POST',  '_token': "{{ csrf_token() }}"};
+                $.ajax({
+                    type: "POST",
+                    data: data,
+                    url: '/system/update_jobs',
+                    success: function(response)
+                    {
+                        if(response.status){
+                            tempAlert("Updated!",1000);
+                            location.reload();
+                        }else{
+                            alert('Unknown error, cannot delete value.');
                         }
                     }
                 });

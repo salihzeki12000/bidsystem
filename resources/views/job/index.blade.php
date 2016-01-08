@@ -14,8 +14,7 @@
                 <th>Job ID</th>
                 <th>Company Name</th>
                 <th>Location</th>
-                <th>Contract Term (Year)</th>
-                <th>Status</th>
+                <th>Requirements</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -25,18 +24,23 @@
                     <td><a href="/job/{{ $job->id }}" target="_blank">{{ $job->id }}</a></td>
                     <td><a href="/company/{{ $job->company_id }}" target="_blank">{{ $job->company->company_name }}</a></td>
                     <td>{{ $job->location->town.','.$job->location->state.','.$job->location->country.' '.$job->location->postcode }}</td>
-                    <td>{{ $job->contract_term }}</td>
-                    <td>{{ $job->rfi_status->rfi_status }}</td>
+                    <td>
+                        @if(count($job->requirements) > 0)
+                            @foreach($job->requirements as $requirement)
+                                {{ $requirement->requirement }}<br>
+                            @endforeach
+                        @endif
+                    </td>
                     <td>
                         <form method="POST" action="/job/{{ $job->id }}" enctype="multipart/form-data" class="delete_job_form">
-                            <a class="btn btn-sm btn-success" href="/job/{{ $job->id }}" title="View"><span class="glyphicon glyphicon-file"></span></a>
-                            <a class="btn btn-sm btn-warning" href="/job/manage_job_files/{{ $job->id }}" title="Files"><span class="glyphicon glyphicon-folder-open"></span></a>
-                            <a class="btn btn-sm btn-primary" href="/job/{{ $job->id }}/edit" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+                            <a class="btn btn-sm btn-success" href="/job/{{ $job->id }}" title="View">View</a>
+                            <a class="btn btn-sm btn-warning" href="/job/manage_job_files/{{ $job->id }}" title="Files">Files</a>
+                            <a class="btn btn-sm btn-primary" href="/job/{{ $job->id }}/edit" title="Edit">Edit</a>
                             <a class="btn btn-sm btn-primary" href="/match/{{ $job->id }}" title="Matches">Recommended Match</a>
                             @can('super-admin-only')
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <button class="btn btn-sm btn-danger" type="submit"><span class="glyphicon glyphicon-trash" title="Delete"></span></button>
+                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                             @endcan
                         </form>
                     </td>

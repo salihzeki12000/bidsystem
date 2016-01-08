@@ -234,105 +234,33 @@ class TicketsController extends Controller
         return redirect()->back();
     }
 
-    /**
-     * List ticket category.
-     */
-    public function manageCategory()
-    {
-        $this->authorize('change_settings', User::class);
-        $categories = TicketCategory::lists('name', 'id');
-
-        return view('ticket.category', compact('categories'));
-    }
-
-    /**
-     * Save ticket category.
-     */
-    public function saveCategory(Request $request)
-    {
-        $this->authorize('change_settings', Ticket::class);
-        $category_array = array(
-            'name' => $request->category_name,
-            'status' => 'Active',
-            'created_by' => \Auth::id()
-        );
-        $new_category = TicketCategory::create($category_array);
-
-        if($new_category){
-            \Session::flash('success_message', 'Ticket category has been saved successfully.');
-        }else{
-            \Session::flash('alert_message', 'Ticket category cannot be saved.');
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $this->authorize('delete', Ticket::class);
-        $category = TicketCategory::find($id);
-
-        if($category->delete()){
-            \Session::flash('success_message', 'Ticket category has been deleted.');
-        }else{
-            \Session::flash('alert_message', 'Ticket category cannot be deleted.');
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Form for admin email
-     */
-    public function adminEmail()
-    {
-        $this->authorize('change_settings', Ticket::class);
-        $email = TicketAdminEmail::first();
-
-        return view('ticket.admin_email', compact('email'));
-    }
 
     /**
      * Save admin email
      */
     public function saveAdminEmail(Request $request)
     {
-        $this->authorize('change_settings', Ticket::class);
-        $email = TicketAdminEmail::find($request->email_id);
+        $status = false;
+        $email = TicketAdminEmail::find($request->id);
 
         if($email){
-            $email->email = $request->email;
+            $email->email = $request->value;
             $email->modified_by = \Auth::id();
             if($email->save()){
-                \Session::flash('success_message', 'Admin email has been saved.');
-            }else{
-                \Session::flash('alert_message', 'Admin email cannot be saved.');
+                $status = true;
             }
         }else{
             $email_array = array(
-                'email' => $request->email,
+                'email' => $request->value,
                 'created_by' => \Auth::id()
             );
             $new_email = TicketAdminEmail::create($email_array);
 
             if($new_email){
-                \Session::flash('success_message', 'Admin email has been saved.');
-            }else{
-                \Session::flash('alert_message', 'Admin email cannot be saved.');
+                $status = true;
             }
         }
 
-        return redirect()->back();
+        return response()->json(['status' => $status]);
     }
 }

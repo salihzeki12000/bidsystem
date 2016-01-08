@@ -28,6 +28,7 @@
             margin-bottom: 0;
             text-align: left;
         }
+        @yield('inside-style')
     </style>
     @yield('style')
             <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->

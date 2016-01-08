@@ -6,8 +6,6 @@
             <h3 class="pull-left">Tickets</h3>
             <h3 class="pull-right">
 				<a href="/ticket/create" class="btn btn-sm btn-primary">Create Ticket</a>
-                <a href="/ticket_category" class="btn btn-sm btn-primary">Ticket Category</a>
-                <a href="/ticket_admin_email" class="btn btn-sm btn-primary">Change Admin Email</a>
             </h3>
         </div>
         <hr>

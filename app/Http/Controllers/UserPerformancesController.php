@@ -39,7 +39,6 @@ class UserPerformancesController extends Controller
                 }
             }
 
-
             $companies[$company_key]['performance'] = $performance;
         }
 

@@ -42,7 +42,9 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#log_table').DataTable();
+            $('#log_table').DataTable({
+                "bSort" : false
+            });
         });
     </script>
 @endsection

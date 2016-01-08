@@ -14,4 +14,9 @@ class Requirement extends Model
     protected $table = 'requirements';
 
     protected $fillable = ['requirement', 'status', 'created_by', 'modified_by'];
+
+    public function jobs()
+    {
+        return $this->belongsToMany('App\Job', 'job_requirement')->withPivot('id');
+    }
 }

@@ -4,6 +4,8 @@ namespace App\Policies;
 
 use App\User;
 use App\Ticket;
+use App\TicketCategory;
+use App\TicketAdminEmail;
 
 class TicketPolicy
 {
@@ -17,7 +19,7 @@ class TicketPolicy
     /**
      * Determine if the given user can edit ticket settings.
      */
-    public function change_settings(User $user)
+    public function change_settings($user)
     {
         $check = false;
         if($user->type == 'globe_admin'){
@@ -50,4 +52,5 @@ class TicketPolicy
 
         return $check;
     }
+
 }

@@ -37,7 +37,7 @@ class JobsController extends Controller
         if (Gate::denies('globe-admin-above')) {
             abort('403');
         }
-        $jobs = Job::where('delete', '!=', 1)->with('company')->with('rfi_status')->select('id', 'contract_term', 'company_id', 'location_id', 'status_id')->get();
+        $jobs = Job::where('delete', '!=', 1)->with('company', 'rfi_status', 'requirements')->select('id', 'contract_term', 'company_id', 'location_id', 'status_id')->get();
 
         return view('job.index', compact('jobs'));
     }
@@ -154,7 +154,8 @@ class JobsController extends Controller
             $company->save();
 
             \Session::flash('success_message', 'Job has been saved successfully.');
-            return redirect('/job');
+
+            return redirect('job/manage_job_files/'.$new_job->id);
         }
     }
 
@@ -339,6 +340,9 @@ class JobsController extends Controller
     {
         $job = Job::with('files')->findOrFail($id);
         $this->authorize('ownership', $job);
+        if(\Auth::user()->company_id){
+            $company = Company::findOrFail(\Auth::user()->company_id);
+        }
         $file_types = FileType::all();
 
         //put files into different categories
@@ -381,7 +385,7 @@ class JobsController extends Controller
             }
         }
 
-        return view('job.manage_job_files', compact('job', 'invoice_files', 'dn_files', 'cn_files', 'logo_files', 'profile_files', 'support_files', 'registration_files', 'others_files', 'file_types'));
+        return view('job.manage_job_files', compact('job', 'invoice_files', 'dn_files', 'cn_files', 'logo_files', 'profile_files', 'support_files', 'registration_files', 'others_files', 'file_types', 'company'));
     }
 
     /**
@@ -482,6 +486,46 @@ class JobsController extends Controller
 
 
         return view('job.match', compact('job', 'companies', 'appointment_objectives'));
+    }
+
+    /**
+     * Job matching.
+     */
+    public function matchJob($company_id)
+    {
+        $company = Company::with('requirements', 'potentials')->find($company_id);
+
+        if($company->category != 'LSP'){
+            abort(403);
+        }
+
+        $selected_requirements = array();
+        foreach($company->requirements as $requirement){
+            $selected_requirements[] = $requirement['id'];
+        }
+
+        $selected_potentials = array();
+        foreach($company->potentials as $potential){
+            $selected_potentials[] = $potential['id'];
+        }
+
+        $jobs = Job::join('job_potential', 'jobs.id', '=', 'job_potential.job_id')
+            ->join('potentials', 'job_potential.potential_id', '=', 'potentials.id')
+            ->join('job_requirement', 'jobs.id', '=', 'job_requirement.job_id')
+            ->join('requirements', 'job_requirement.requirement_id', '=', 'requirements.id')
+            ->select('*')
+            ->whereIn('potentials.id', $selected_potentials)
+            ->whereIn('requirements.id', $selected_requirements)
+            ->where('jobs.status_id', '=','4')
+            ->with('requirements', 'potentials')
+            ->groupBy('jobs.id')
+            ->get();
+
+        $appointment_objectives = AppointmentObjectives::lists('app_objective', 'id');
+
+        //dd($jobs->toArray());
+
+        return view('job.job_match', compact('company', 'jobs', 'appointment_objectives'));
     }
 
     /**
