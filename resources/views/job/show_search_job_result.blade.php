@@ -40,7 +40,7 @@
         <hr>
         @if(count($jobs) > 0 && !$return_empty_result)
             @foreach($jobs as $job)
-                <p><b><a class="btn btn-primary" href="job/{{ $job->id }}">View Job Detail</a></b></p>
+                <p><b><a class="btn btn-primary" href="job/{{ $job->id }}" target="_blank">View Job Detail</a></b></p>
                 <p>Location: {{ $job->location->town.' '.$job->location->state.' '.$job->location->country.' '.$job->location->postcode }}</p>
                 <p>Requirements:
                     @foreach($job->requirements as $count => $individual_requirement)

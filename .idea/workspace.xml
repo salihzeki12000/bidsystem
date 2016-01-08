@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4c95f0d8-a18b-4678-984a-c1b35f14e6d4" name="Default" comment="add match function">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/job/show_search_job_result.blade.php" afterPath="$PROJECT_DIR$/resources/views/job/show_search_job_result.blade.php" />
-    </list>
+    <list default="true" id="4c95f0d8-a18b-4678-984a-c1b35f14e6d4" name="Default" comment="add match function" />
     <list id="d7592868-30c8-4794-b0e7-b318863fe064" name="Rejected commit: Default" comment="add match function" />
     <ignored path="bidsystem.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -63,8 +60,8 @@
       <file leaf-file-name="show_search_job_result.blade.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/views/job/show_search_job_result.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.47799385">
-              <caret line="36" column="14" selection-start-line="36" selection-start-column="14" selection-end-line="36" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.8157625">
+              <caret line="58" column="14" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -1621,8 +1618,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/resources/views/job/show_search_job_result.blade.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47799385">
-          <caret line="36" column="14" selection-start-line="36" selection-start-column="14" selection-end-line="36" selection-end-column="14" />
+        <state vertical-scroll-proportion="0.8157625">
+          <caret line="58" column="14" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
           <folding />
         </state>
       </provider>
