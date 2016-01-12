@@ -7,9 +7,9 @@
 @endsection
 
 @section('content')
-    <div class="row">
+    <div class="col-sm-12">
         <form id="bid_form" class="form-horizontal" role="form" method="POST" action="/bid" enctype="multipart/form-data">
-            <div class="col-md-8 col-md-offset-2">
+            <div>
                 <h4>Submit New Bid For Job ID {{ $job->id }}</h4>
                 <br>
                 <div class="panel panel-default">

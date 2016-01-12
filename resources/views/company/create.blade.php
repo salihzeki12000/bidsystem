@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <form class="form-horizontal" role="form" method="POST" action="/company" enctype="multipart/form-data" id="company_form">
-                <div class="col-md-8 col-md-offset-2">
+                <div>
                     <h4>Add New Company</h4>
                     <br>
                     <div class="panel panel-default">

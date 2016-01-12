@@ -6,7 +6,7 @@
 @endsection
 
 @section('content')
-    <div class="col-sm-6 col-sm-offset-3">
+    <div class="col-sm-10 col-sm-offset-1">
         <p>Results for jobs containing: <a class="btn btn-sm btn-success pull-right" href="/search_job">Search Again</a></p>
         @if(!empty($keyword))
             <p>Keyword: <b>{{ $keyword }}</b> </p>

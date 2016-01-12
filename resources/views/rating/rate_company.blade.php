@@ -59,7 +59,7 @@
 @endsection
 
 @section('content')
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-12">
         <div class="row">
             <h4>Rate Company: {{ $company->company_name or 'Admin' }}</h4>
         </div>

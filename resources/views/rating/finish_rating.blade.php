@@ -1,7 +1,7 @@
 @extends('app')
 
 @section('content')
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-12">
         <div class="panel panel-default">
             <div class="panel-body text-center">
                 <h1>

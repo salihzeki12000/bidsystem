@@ -8,9 +8,9 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="row">
+        <div class="col-sm-12">
             <form class="form-horizontal" role="form" method="POST" action="/job/{{ $job->id }}" enctype="multipart/form-data" id="job_form">
-                <div class="col-md-8 col-md-offset-2">
+                <div>
                     <h4>Edit Job</h4>
                     <br>
                     <div class="panel panel-default">

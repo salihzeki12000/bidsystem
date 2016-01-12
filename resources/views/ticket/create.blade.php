@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-12">
         <form class="form-horizontal" role="form" method="POST" action="/ticket" enctype="multipart/form-data" id="ticket_form">
             <div class="panel panel-default">
                 <div class="panel-heading">New Ticket</div>

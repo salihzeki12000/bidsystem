@@ -484,104 +484,102 @@
         </div>
         @endcan
 
-        <div class="clearfix"></div>
-        <hr>
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/company"><img src="/images/icons/Department-100.png" width="50" height="50"/> <br>Company</a>
-            </h5>
-        </div>
-        @can('globe-admin-above')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/user"><img src="/images/icons/User Male-100.png" width="50" height="50"/> <br>User</a>
-            </h5>
-        </div>
-        @endcan
-        @can('non-outward-user')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                @can('non-system-admin')
-                    <a href="/company/job_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>
-                @else
-                    <a href="/job"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>
-                @endcan
-            </h5>
-        </div>
-        @endcan
-        @can('non-inward-user')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                @can('non-system-admin')
-                    <a href="/company/bid_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>
-                @else
-                    <a href="/bid"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>
-                @endcan
-            </h5>
-        </div>
-        @endcan
-        @can('non-system-admin')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/manage_group_user/{{ \Auth::user()->company_id }}"><img src="/images/icons/Conference-100.png" width="50" height="50"/> <br>Manage Group User</a>
-            </h5>
-        </div>
-        @endcan
-        @can('non-inward-user')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/search_job"><img src="/images/icons/Search-100.png" width="50" height="50"/> <br>Search Job</a>
-            </h5>
-        </div>
-        @endcan
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                @can('globe-admin-above')
-                    <a href="/appointments"><img src="/images/icons/Calendar-100.png" width="50" height="50"/> <br>Appointments</a>
-                @else
-                    <a href="/show_all_appointments/{{ \Auth::user()->company_id }}"><img src="/images/icons/Calendar-100.png" width="50" height="50"/> <br>Appointments</a>
-                @endcan
-            </h5>
-        </div>
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                @can('globe-admin-above')
-                    <a href="/ticket"><img src="/images/icons/Customer Support-100.png" width="50" height="50"/> <br>Ticket</a>
-                @else
-                       <a href="/ticket/show_my_tickets/{{ \Auth::user()->company_id }}"><img src="/images/icons/Customer Support-100.png" width="50" height="50"/> <br>Ticket</a>
-                @endcan
-            </h5>
-        </div>
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/rating/list_companies"><img src="/images/icons/Star-100.png" width="50" height="50"/> <br>Rating</a>
-            </h5>
-        </div>
-        @can('super-admin-only')
-		<div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/user_performance" ><img src="/images/icons/User Menu-100.png" width="50" height="50"/> <br>User Performance</a>
-            </h5>
-        </div>
-        @endcan
-        @can('globe-admin-above')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/system" ><img src="/images/icons/system.png" width="50" height="50"/> <br>System</a>
-            </h5>
-        </div>
-        @endcan
-        @can('globe-admin-above')
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/log" ><img src="/images/icons/system.png" width="50" height="50"/> <br>Transaction Logs</a>
-            </h5>
-        </div>
-        @endcan
-        <div class="col-xs-6 col-sm-2">
-            <h5 class="text-center">
-                <a href="/report/report" ><img src="/images/icons/system.png" width="50" height="50"/> <br>Report</a>
-            </h5>
-        </div>
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/company"><img src="/images/icons/Department-100.png" width="50" height="50"/><br>Company</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@can('globe-admin-above')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/user"><img src="/images/icons/User Male-100.png" width="50" height="50"/> <br>User</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--@can('non-outward-user')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--@can('non-system-admin')--}}
+                    {{--<a href="/company/job_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>--}}
+                {{--@else--}}
+                    {{--<a href="/job"><img src="/images/icons/Strike-100.png" width="50" height="50"/> <br>Job</a>--}}
+                {{--@endcan--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--@can('non-inward-user')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--@can('non-system-admin')--}}
+                    {{--<a href="/company/bid_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>--}}
+                {{--@else--}}
+                    {{--<a href="/bid"><img src="/images/icons/Court Judge-100.png" width="50" height="50"/> <br>Bid</a>--}}
+                {{--@endcan--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--@can('non-system-admin')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/manage_group_user/{{ \Auth::user()->company_id }}"><img src="/images/icons/Conference-100.png" width="50" height="50"/> <br>Manage Group User</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--@can('non-inward-user')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/search_job"><img src="/images/icons/Search-100.png" width="50" height="50"/> <br>Search Job</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--@can('globe-admin-above')--}}
+                    {{--<a href="/appointments"><img src="/images/icons/Calendar-100.png" width="50" height="50"/> <br>Appointments</a>--}}
+                {{--@else--}}
+                    {{--<a href="/show_all_appointments/{{ \Auth::user()->company_id }}"><img src="/images/icons/Calendar-100.png" width="50" height="50"/> <br>Appointments</a>--}}
+                {{--@endcan--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--@can('globe-admin-above')--}}
+                    {{--<a href="/ticket"><img src="/images/icons/Customer Support-100.png" width="50" height="50"/> <br>Ticket</a>--}}
+                {{--@else--}}
+                       {{--<a href="/ticket/show_my_tickets/{{ \Auth::user()->company_id }}"><img src="/images/icons/Customer Support-100.png" width="50" height="50"/> <br>Ticket</a>--}}
+                {{--@endcan--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/rating/list_companies"><img src="/images/icons/Star-100.png" width="50" height="50"/> <br>Rating</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@can('super-admin-only')--}}
+		{{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/user_performance" ><img src="/images/icons/User Menu-100.png" width="50" height="50"/> <br>User Performance</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--@can('globe-admin-above')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/system" ><img src="/images/icons/system.png" width="50" height="50"/> <br>System</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--@can('globe-admin-above')--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/log" ><img src="/images/icons/system.png" width="50" height="50"/> <br>Transaction Logs</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
+        {{--@endcan--}}
+        {{--<div class="col-xs-6 col-sm-2">--}}
+            {{--<h5 class="text-center">--}}
+                {{--<a href="/report/report" ><img src="/images/icons/system.png" width="50" height="50"/> <br>Report</a>--}}
+            {{--</h5>--}}
+        {{--</div>--}}
     </div>
 @endsection

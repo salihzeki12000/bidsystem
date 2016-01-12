@@ -27,10 +27,10 @@
                         <form method="POST" action="/bid/{{ $bid->id }}" enctype="multipart/form-data" class="delete_bid_form">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <a class="btn btn-sm btn-success" href="/bid/{{ $bid->id }}" title="View"><span class="glyphicon glyphicon-file"></span></a>
-                            <a class="btn btn-sm btn-warning" href="/bid/manage_bid_files/{{ $bid->id }}" title="Files"><span class="glyphicon glyphicon-folder-open"></span></a>
-                            <a class="btn btn-sm btn-primary" href="/bid/{{ $bid->id }}/edit" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
-                            <button class="btn btn-sm btn-danger" type="submit"><span class="glyphicon glyphicon-trash" title="Delete"></span></button>
+                            <a class="btn btn-sm btn-success" href="/bid/{{ $bid->id }}" title="View">View</a>
+                            <a class="btn btn-sm btn-warning" href="/bid/manage_bid_files/{{ $bid->id }}" title="Files">File</a>
+                            <a class="btn btn-sm btn-primary" href="/bid/{{ $bid->id }}/edit" title="Edit">Edit</a>
+                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                         </form>
                     </td>
                 </tr>

@@ -1,8 +1,8 @@
 @extends('app')
 
 @section('content')
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-12">
+        <div>
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#credit" aria-controls="credit" role="tab" data-toggle="tab">Credit Transaction</a></li>
@@ -14,7 +14,7 @@
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="credit">
                 <form id="credit_form" class="form-horizontal" role="form" method="POST" action="/credit" enctype="multipart/form-data">
-                    <div class="col-md-8 col-md-offset-2">
+                    <div>
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 @if (count($errors) > 0)
@@ -77,7 +77,7 @@
 
             <div role="tabpanel" class="tab-pane" id="expiry_date">
                 <form id="credit_form" class="form-horizontal" role="form" method="POST" action="/credit/change_expiry_date" enctype="multipart/form-data">
-                    <div class="col-md-8 col-md-offset-2">
+                    <div>
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 @if (count($errors) > 0)

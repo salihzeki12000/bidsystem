@@ -1,8 +1,8 @@
 @extends('app')
 
 @section('content')
-    <div class="row">
-            <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-12">
+            <div>
                 <h4>View Company</h4>
                 <br>
                 <div class="panel panel-default">

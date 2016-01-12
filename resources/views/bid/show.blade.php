@@ -1,8 +1,8 @@
 @extends('app')
 
 @section('content')
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+    <div class="col-sm-12">
+        <div>
             <h4>Bid ID: {{ $bid->id }}</h4>
             <br>
             @can('super-admin-only')

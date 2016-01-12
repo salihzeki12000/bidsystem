@@ -132,7 +132,7 @@ class BidsController extends Controller
         $bid = Bid::with('company')->with('rfi_status')->find($id);
         $job = Job::find($bid->job_id);
 
-        if (\Auth::user()->company_id != $job->company_id && \Auth::user()->company_id != $bid->company_id) {
+        if (\Auth::user()->company_id != $job->company_id && \Auth::user()->company_id != $bid->company_id && \Auth::user()->type == 'globe_admin' && \Auth::user()->type == 'super_admin') {
             abort('403');
         }
 
