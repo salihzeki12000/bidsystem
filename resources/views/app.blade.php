@@ -47,16 +47,21 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#default_bar">
                 <span class="sr-only">Toggle Navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <button href="#menu-toggle" class="btn btn-default navbar-toggle collapsed" id="menu-toggle">
+                <span class="glyphicon glyphicon-list"></span>
             </button>
             <a class="navbar-brand" href="/">Bid System</a>
         </div>
 
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+        <div class="collapse navbar-collapse" id="default_bar">
             <ul class="nav navbar-nav">
                 @if (!Auth::guest())
                     @can('non-system-admin')
@@ -190,5 +195,11 @@
 
 <!-- Scripts -->
 @yield('script')
+<script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
 </body>
 </html>
