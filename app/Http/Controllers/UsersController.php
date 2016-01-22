@@ -373,7 +373,8 @@ class UsersController extends Controller
 
         $company = Company::findOrFail($request->company_id);
         $this->authorize('ownership', $company);
-        if($company->account_quota > $request->company_quota){
+
+        if($company->account_quota > 0){
             if($company->category == 'LSP'){
                 $user_type = 'outward_group_user';
             }else{
@@ -391,7 +392,9 @@ class UsersController extends Controller
             );
             if(User::create($user_array)){
                 \Session::flash('success_message', 'User has been saved successfully.');
-                return redirect('/manage_group_user');
+                $company->account_quota--;
+                $company->save();
+                return redirect('/manage_group_user/'.$company->id);
             }else{
                 return redirect()->back()->withInput();
             }

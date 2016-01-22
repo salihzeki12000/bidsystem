@@ -56,7 +56,7 @@
             </div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">Cost and Competitiveness</label>
+                    <label class="col-sm-3 control-label">Cost Competitiveness</label>
                     <div class="col-sm-6">
                         <p><b>{{ round($rating_averages->c, 2) }}</b></p>
                     </div>
@@ -65,7 +65,7 @@
                 <div class="clearfix"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">Environmental Responsible</label>
+                    <label class="col-sm-3 control-label">Environmental Responsibility</label>
                     <div class="col-sm-6">
                         <p><b>{{ round($rating_averages->e, 2) }}</b></p>
                     </div>
@@ -92,7 +92,7 @@
                 <div class="clearfix"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">Assurance</label>
+                    <label class="col-sm-3 control-label">Assurance of Supply</label>
                     <div class="col-sm-6">
                         <p><b>{{ round($rating_averages->a, 2) }}</b></p>
                     </div>
@@ -232,6 +232,9 @@
                 </div>
             </div>
         @endif
+        <div class="col-sm-12 text-center">
+            <a href="/rating/list_companies" class="btn btn-default">Back</a>
+        </div>
     </div>
 @endsection
 

@@ -9,28 +9,31 @@
             <thead>
             <tr>
                 <th>Company Name</th>
-                <th>Date Operation Started</th>
-                <th>Billing Period</th>
-                <th>Charge GST</th>
+                <th>Requirements</th>
+                <th>Features</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-
                 @foreach($companies as $company)
                     <tr>
-                        <td><a href="/company/{{ $company->company_id }}" target="_blank">{{ $company->company_name }}</a></td>
-                        <td>{{ $company->date_operation_started }}</td>
-                        <td>{{ $company->billing_period }}</td>
+                        <td><a href="/company/{{ $company['id'] }}" target="_blank">{{ $company['company_name'] }}</a></td>
                         <td>
-                            @if($company->include_gst == 1)
-                                {{ 'Yes, '.$company->gst_percent.'%' }}
-                            @else
-                                {{ 'No' }}
+                            @if(count($company['requirements']) > 0)
+                                @foreach($company['requirements'] as $requirement)
+                                    <p>{{ $requirement['requirement'] }}</p>
+                                @endforeach
                             @endif
                         </td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#new_message_form" data-recipient="{{ $company->company_name }}" data-companyid="{{ $company->company_id }}">Invite LSP to bid</button>
+                            @if(count($company['features']) > 0)
+                                @foreach($company['features'] as $feature)
+                                    <p>{{ $feature['feature'] }}</p>
+                                @endforeach
+                            @endif
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#new_message_form" data-recipient="{{ $company['company_name'] }}" data-companyid="{{ $company['id'] }}">Invite LSP to bid</button>
                         </td>
                     </tr>
                 @endforeach
@@ -56,8 +59,8 @@
                                         <select name="receiver_id" class="form-control" id="company_list">
                                             @if(count($companies) > 0)
                                                 @foreach($companies as $company_key => $company)
-                                                    @if($company->id != \Auth::user()->company_id)
-                                                        <option value="{{ $company->company_id }}">{{ $company->company_name }}</option>
+                                                    @if($company['id'] != \Auth::user()->company_id)
+                                                        <option value="{{ $company['id'] }}">{{ $company['company_name'] }}</option>
                                                     @endif
                                                 @endforeach
                                             @endif

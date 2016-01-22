@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CompanyFeature;
 use App\CompanyPotential;
 use App\CompanyRequirement;
 use App\Industry;
@@ -469,16 +470,28 @@ class JobsController extends Controller
             $selected_potentials[] = $potential['id'];
         }
 
-        $companies = Company::join('company_potential', 'companies.id', '=', 'company_potential.company_id')
+        $company_ids = Company::join('company_potential', 'companies.id', '=', 'company_potential.company_id')
             ->join('potentials', 'company_potential.potential_id', '=', 'potentials.id')
             ->join('company_requirement', 'companies.id', '=', 'company_requirement.company_id')
             ->join('requirements', 'company_requirement.requirement_id', '=', 'requirements.id')
-            ->select('*')
+            ->select('companies.id AS company_id')
             ->whereIn('potentials.id', $selected_potentials)
             ->whereIn('requirements.id', $selected_requirements)
             ->where('companies.status', '=','Active')
+            ->where('companies.delete', '=','0')
             ->groupBy('companies.id')
             ->get();
+
+        $companies = array();
+        if(count($company_ids) > 0){
+            foreach($company_ids as $company_key => $company){
+                $company_details = Company::with('features', 'requirements')->where('id', $company->company_id)->select('id', 'company_name')->first();
+                $companies[] = $company_details->toArray();
+            }
+        }
+
+
+        //dd($companies);
 
         $appointment_objectives = AppointmentObjectives::lists('app_objective', 'id');
 

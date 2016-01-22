@@ -1,4 +1,14 @@
-<table class="table">
+<table class="table table-bordered">
+    <tr>
+        <td>Total Job Posted Within This Time Period: </td>
+        <td>{{ count($jobs) }}</td>
+    </tr>
+    <tr>
+        <td>Total Bids Received For All The Jobs: </td>
+        <td>{{ $total_valid_bids_received }}</td>
+    </tr>
+</table>
+<table class="table table-bordered">
     <tr>
         <th>Job ID</th>
         <th>Number of Days</th>

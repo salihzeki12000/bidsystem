@@ -189,7 +189,6 @@
                         <button type="submit" class="btn btn-primary" style="margin-right: 15px;">
                             Submit
                         </button>
-                        <a href="/job" class="btn btn-default">Back</a>
                     </div>
                     <div class="clearfix"></div>
                     <br>

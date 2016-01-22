@@ -30,7 +30,7 @@ class SessionTimeout
             elseif(time() - $this->session->get('lastActivityTime') > $this->timeout){
                 $this->session->forget('lastActivityTime');
                 Auth::logout();
-                \Session::flash('alert_message', 'You had not activity in '.$this->timeout/60 .' minutes ago.');
+                \Session::flash('alert_message', 'You had no activity in the last '.$this->timeout/60 .' minutes.');
                 return redirect('/');
             }
             $this->session->put('lastActivityTime',time());

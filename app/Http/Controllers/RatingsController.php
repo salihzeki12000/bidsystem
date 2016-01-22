@@ -20,7 +20,7 @@ class RatingsController extends Controller
      */
     public function listCompanies()
     {
-        $companies = Company::where('category', 'LSP')->lists('company_name', 'id');
+        $companies = Company::where('category', 'LSP')->where('delete', '0')->lists('company_name', 'id');
 
         return view('rating.list_companies', compact('companies'));
     }
@@ -35,8 +35,13 @@ class RatingsController extends Controller
             return redirect()->back();
         }
 
-        $company = Company::find($request->company_id);
-        $rating = Rating::where('rate_by', \Auth::user()->company_id)->where('company_id', $request->company_id)->first();
+        if($request->company_id != \Auth::user()->company_id){
+            $company = Company::find($request->company_id);
+            $rating = Rating::where('rate_by', \Auth::user()->company_id)->where('company_id', $request->company_id)->first();
+        }else{
+            \Session::flash('alert_message', "You cannot rate yourself.");
+            return redirect()->back();
+        }
 
         //dd($rating->toArray());
 

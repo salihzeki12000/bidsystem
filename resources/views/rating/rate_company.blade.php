@@ -73,7 +73,7 @@
             @endif
 
             <div class="form-group required">
-                <label class="col-sm-3 control-label">Cost and Competitiveness</label>
+                <label class="col-sm-3 control-label">Cost Competitiveness</label>
                 <div class="col-sm-6">
                     <span class="star-cb-group">
                       <input type="radio" id="crating-5" name="c" value="5" @if(count($rating) > 0 && $rating->c == 5) checked @endif/><label for="crating-5">5</label>
@@ -88,7 +88,7 @@
             <div class="clearfix"></div>
 
             <div class="form-group required">
-                <label class="col-sm-3 control-label">Environmental Responsible</label>
+                <label class="col-sm-3 control-label">Environmental Responsibility</label>
                 <div class="col-sm-6">
                     <span class="star-cb-group">
                       <input type="radio" id="erating-5" name="e" value="5" @if(count($rating) > 0 && $rating->e == 5) checked @endif/><label for="erating-5">5</label>
@@ -133,7 +133,7 @@
             <div class="clearfix"></div>
 
             <div class="form-group required">
-                <label class="col-sm-3 control-label">Assurance</label>
+                <label class="col-sm-3 control-label">Assurance of Supply</label>
                 <div class="col-sm-6">
                     <span class="star-cb-group">
                       <input type="radio" id="arating-5" name="a" value="5" @if(count($rating) > 0 && $rating->a == 5) checked @endif/><label for="arating-5">5</label>
@@ -175,6 +175,7 @@
 
             <div class="form-group text-center">
                 <button type="submit" class="btn btn-primary">Submit</button>
+                <a class="btn btn-default" href="/rating/list_companies">Back</a>
             </div>
 
         </form>
