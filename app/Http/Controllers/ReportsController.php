@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Bid;
 use App\Company;
+use App\CompanyFeature;
 use App\CountryStateTown;
 use App\Industry;
 use App\Job;
@@ -364,27 +365,6 @@ class ReportsController extends Controller
 
         //dd($refined_array);
 
-//        if(count($jobs) > 0){
-//            foreach($jobs as $job){
-//                $temp_array = array(
-//                    'month' =>
-//                );
-//                dd($job->number_of_jobs);
-//            }
-//
-//            Excel::create('Outsourcing trend', function($excel) use ($jobs) {
-//
-//                $excel->sheet('Sheet1', function($sheet) use ($jobs) {
-//
-//                    $sheet->fromArray(array(
-//                        $jobs
-//                    ));
-//
-//                });
-//
-//            })->export('csv');
-//        }
-
         //return response()->json(['result' => $users]);
         return view('report.report_9', compact('refined_array', 'states'));
     }
@@ -438,6 +418,168 @@ class ReportsController extends Controller
 
         //return response()->json(['result' => $requirements]);
         return view('report.report_10', compact('requirements'));
+    }
+
+    public function compareReport(Request $request){
+        $job_id = $request->job_id;
+        $bids_id = $request->bids_id;
+        $job = Job::with('requirements', 'potentials', 'highlights')->find($job_id)->toArray();
+
+        $features_for_job_poster_company = CompanyFeature::where('company_id', 1)->get();
+        $bids = Bid::with('company', 'company.features', 'company.ratings', 'company.requirements_with_name_only', 'company.potentials_with_name_only')->whereIn('bids.id', $bids_id)->get()->toArray();
+
+        //dd($bids);
+
+        if(count($features_for_job_poster_company) > 0){
+            foreach($features_for_job_poster_company as $feature){
+                switch ($feature->feature){
+                    case 'Equipment':
+                        $job['equipment'][] = $feature->toArray();
+                        break;
+                    case 'Safety and Health':
+                        $job['safety_and_health'][] = $feature->toArray();
+                        break;
+                    case 'Environmental':
+                        $job['environmental'][] = $feature->toArray();
+                        break;
+                    case 'Technology':
+                        $job['technology'][] = $feature->toArray();
+                        break;
+                    case 'Liability and Claims':
+                        $job['liability_and_claims'][] = $feature->toArray();
+                        break;
+                    case 'Blacklist':
+                        $job['blacklist'][] = $feature->toArray();
+                        break;
+                    case 'Innovative Power':
+                        $job['innovative_power'][] = $feature->toArray();
+                        break;
+                    case 'Quality':
+                        $job['quality'][] = $feature->toArray();
+                        break;
+                    case 'Certification':
+                        $job['certification'][] = $feature->toArray();
+                        break;
+                    case 'Past Experiences':
+                        $job['past_experiences'][] = $feature->toArray();
+                        break;
+                    case 'Security':
+                        $job['security'][] = $feature->toArray();
+                        break;
+                    case 'Trade Compliance':
+                        $job['trade_compliance'][] = $feature->toArray();
+                        break;
+                    case 'Assurance of Supply':
+                        $job['assurance_of_supply'][] = $feature->toArray();
+                        break;
+                    case 'Responsiveness':
+                        $job['responsiveness'][] = $feature->toArray();
+                        break;
+                    case 'Scalability/Growth':
+                        $job['scalability_growth'][] = $feature->toArray();
+                        break;
+                }
+            }
+        }
+
+
+        if(count($bids) > 0){
+            foreach($bids as $bid_key => $bid){
+                $c = 0;
+                $e = 0;
+                $t = 0;
+                $r = 0;
+                $a = 0;
+                $q = 0;
+
+                $count_success_bids = Bid::where('company_id', $bid['company']['id'])->where('status_id', 6)->count();
+                $bids[$bid_key]['company']['past_project_awarded'] = $count_success_bids;
+
+                if(count($bid['company']['features']) > 0){
+                    foreach($bid['company']['features'] as $features_key => $feature){
+                        switch ($feature['feature']){
+                            case 'Equipment':
+                                $bids[$bid_key]['company']['equipment'][] = $feature;
+                                array_forget($bids[$bid_key]['company']['features'], $features_key);
+                                break;
+                            case 'Safety and Health':
+                                $bids[$bid_key]['company']['safety_and_health'][] = $feature;
+                                break;
+                            case 'Environmental':
+                                $bids[$bid_key]['company']['environmental'][] = $feature;
+                                break;
+                            case 'Technology':
+                                $bids[$bid_key]['company']['technology'][] = $feature;
+                                break;
+                            case 'Liability and Claims':
+                                $bids[$bid_key]['company']['liability_and_claims'][] = $feature;
+                                break;
+                            case 'Blacklist':
+                                $bids[$bid_key]['company']['blacklist'][] = $feature;
+                                break;
+                            case 'Innovative Power':
+                                $bids[$bid_key]['company']['innovative_power'][] = $feature;
+                                break;
+                            case 'Quality':
+                                $bids[$bid_key]['company']['quality'][] = $feature;
+                                break;
+                            case 'Certification':
+                                $bids[$bid_key]['company']['certification'][] = $feature;
+                                break;
+                            case 'Past Experiences':
+                                $bids[$bid_key]['company']['past_experiences'][] = $feature;
+                                break;
+                            case 'Security':
+                                $bids[$bid_key]['company']['security'][] = $feature;
+                                break;
+                            case 'Trade Compliance':
+                                $bids[$bid_key]['company']['trade_compliance'][] = $feature;
+                                break;
+                            case 'Assurance of Supply':
+                                $bids[$bid_key]['company']['assurance_of_supply'][] = $feature;
+                                break;
+                            case 'Responsiveness':
+                                $bids[$bid_key]['company']['responsiveness'][] = $feature;
+                                break;
+                            case 'Scalability/Growth':
+                                $bids[$bid_key]['company']['scalability_growth'][] = $feature;
+                                break;
+                        }
+                        array_forget($bids[$bid_key]['company']['features'], $features_key);
+                    }
+                }
+
+                if(count($bid['company']['ratings']) > 0){
+                    foreach($bid['company']['ratings'] as $rating){
+                        $c+=$rating['c'];
+                        $e+=$rating['e'];
+                        $t+=$rating['t'];
+                        $r+=$rating['r'];
+                        $a+=$rating['a'];
+                        $q+=$rating['q'];
+                    }
+                    $c = round($c/count($bid['company']['ratings']), 2);
+                    $e = round($e/count($bid['company']['ratings']), 2);
+                    $t = round($t/count($bid['company']['ratings']), 2);
+                    $r = round($r/count($bid['company']['ratings']), 2);
+                    $a = round($a/count($bid['company']['ratings']), 2);
+                    $q = round($q/count($bid['company']['ratings']), 2);
+                }
+                $bids[$bid_key]['company']['c'] = $c;
+                $bids[$bid_key]['company']['e'] = $e;
+                $bids[$bid_key]['company']['t'] = $t;
+                $bids[$bid_key]['company']['r'] = $r;
+                $bids[$bid_key]['company']['a'] = $a;
+                $bids[$bid_key]['company']['q'] = $q;
+
+                $now = Carbon::now();
+                $diff = $now->diffInYears(Carbon::parse($bids[$bid_key]['company']['date_operation_started']));
+                $bids[$bid_key]['company']['duration_in_business'] = $diff;
+            }
+        }
+        //dd($bids);
+
+        return view('report.compare_report', compact('job', 'bids'));
     }
 
     public function generateCsvFromView(){

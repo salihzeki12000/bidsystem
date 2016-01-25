@@ -696,4 +696,13 @@ class JobsController extends Controller
         return $status;
     }
 
+    /**
+     * Show UI for compare lsp report
+     */
+    public function compareLsps($job_id){
+        $job = Job::with('valid_bids', 'valid_bids.company')->find($job_id);
+        //dd($job->toArray());
+
+        return view('job.compare_lsps', compact('job'));
+    }
 }

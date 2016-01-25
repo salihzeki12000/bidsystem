@@ -48,7 +48,10 @@
                                         {{ 'No bids.' }}
                                     @endif
                                 </td>
-                                <td><a href="/job/{{ $job->id }}/edit" class="btn btn-sm btn-primary">Update Job</a></td>
+                                <td>
+                                    <a href="/job/{{ $job->id }}/edit" class="btn btn-sm btn-primary">Update Job</a>
+                                    <a href="/job/compare_lsps/{{ $job->id }}" class="btn btn-sm btn-primary">Compare LSPs</a>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>

@@ -54,6 +54,16 @@ class Company extends Model
         return $this->belongsToMany('App\Requirement', 'company_requirement')->withPivot('id');
     }
 
+    public function requirements_with_name_only()
+    {
+        return $this->belongsToMany('App\Requirement', 'company_requirement')->withPivot('id')->select('requirement');
+    }
+
+    public function potentials_with_name_only()
+    {
+        return $this->belongsToMany('App\Potential', 'company_potential')->withPivot('id')->select('potential');
+    }
+
     public function potentials()
     {
         return $this->belongsToMany('App\Potential', 'company_potential')->withPivot('id');
@@ -92,6 +102,11 @@ class Company extends Model
     public function valid_bids()
     {
         return $this->hasMany('App\Bid')->whereNotIn('status_id', [1, 5]);
+    }
+
+    public function success_bids()
+    {
+        return $this->hasMany('App\Bid')->where('status_id', 6);
     }
 
     public function logistics()

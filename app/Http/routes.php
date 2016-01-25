@@ -61,6 +61,7 @@ Route::get('job_match/{id}','JobsController@matchJob');
 Route::get('search_job', 'JobsController@searchJob');
 Route::post('show_search_job_result', 'JobsController@showSearchJobResult');
 Route::get('job_progress_tracking/{id}','CompaniesController@jobProgressTracking');
+Route::get('job/compare_lsps/{id}','JobsController@compareLsps');
 
 //job files
 Route::get('job/manage_job_files/{id}','JobsController@manageJobFiles');
@@ -137,6 +138,7 @@ Route::post('report/outsource_distribution','ReportsController@outsourceDistribu
 Route::post('report/lsp_distribution','ReportsController@lspDistribution');
 Route::post('report/target_management','ReportsController@targetManagement');
 Route::post('report/positioning_performance','ReportsController@positioningPerformance');
+Route::post('report/compare_report','ReportsController@compareReport');
 
 Route::controllers([
     'password' => 'Auth\PasswordController',
