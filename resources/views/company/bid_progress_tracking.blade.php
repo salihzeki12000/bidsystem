@@ -1,18 +1,7 @@
-@extends('content_with_sidebar')
-
-@section('sidebar')
-    <ul class="nav nav-sidebar">
-        <h4 class="text-center">{{ $company->company_name }}</h4>
-    </ul>
-    <ul class="nav nav-sidebar">
-        <li><a href="/company/bid_history/{{ $company->id }}">Bid History</a></li>
-        <li class="active"><a href="/bid_progress_tracking/{{ $company->id }}">Bid Progress Tracking</a></li>
-        <li><a href="/bid/create">Create Bid</a></li>
-    </ul>
-@endsection
+@extends('app')
 
 @section('content')
-    <div class="row">
+    <div class="col-sm-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 Bids

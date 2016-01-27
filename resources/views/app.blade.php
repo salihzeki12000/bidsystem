@@ -29,6 +29,18 @@
             margin-bottom: 0;
             text-align: left;
         }
+
+        .no-color-no-border{
+            background-color: transparent;
+            border: none;
+        }
+
+        .padding{
+            padding-left: 35px !important;
+        }
+        .no-margin-bot{
+            margin-bottom: 0px !important;
+        }
         @yield('inside-style')
     </style>
     @yield('style')
@@ -96,93 +108,81 @@
 
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
-        <ul class="sidebar-nav">
-            <li class="sidebar-brand">
-            </li>
-            <li>
-                <a href="/home">Home</a>
-            </li>
-            <li>
-                <a href="/company"><img src="/images/icons/Department-100.png" width="15" height="15"/> Company</a>
-            </li>
+        <div class="list-group list-group-root well">
+            <a class="list-group-item no-color-no-border" href="/home">Home</a>
+
+            <a class="list-group-item no-color-no-border" href="/company"><img src="/images/icons/Department-100.png" width="15" height="15"/> Company</a>
 
             @can('globe-admin-above')
-                <li>
-                    <a href="/user"><img src="/images/icons/User Male-100.png" width="15" height="15"/>User</a>
-                </li>
+            <a class="list-group-item no-color-no-border" href="/user"><img src="/images/icons/User Male-100.png" width="15" height="15"/>User</a>
             @endcan
+
             @can('non-outward-user')
-                <li>
-                    @can('non-system-admin')
-                    <a href="/company/job_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Strike-100.png" width="15" height="15"/> Job</a>
-                    @else
-                        <a href="/job"><img src="/images/icons/Strike-100.png" width="15" height="15"/> Job</a>
-                    @endcan
-                </li>
-            @endcan
-            @can('non-inward-user')
-                <li>
-                    @can('non-system-admin')
-                    <a href="/company/bid_history/{{ \Auth::user()->company_id }}"><img src="/images/icons/Court Judge-100.png" width="15" height="15"/> Bid</a>
-                    @else
-                        <a href="/bid"><img src="/images/icons/Court Judge-100.png" width="15" height="15"/> Bid</a>
-                        @endcan
-                </li>
-            @endcan
             @can('non-system-admin')
-
-                <li>
-                    <a href="/manage_group_user/{{ \Auth::user()->company_id }}"><img src="/images/icons/Conference-100.png" width="15" height="15"/> Manage Group User</a>
-                </li>
+            <a href="#jobs" class="list-group-item no-color-no-border" data-toggle="collapse"><img src="/images/icons/Strike-100.png" width="15" height="15"/> Job</a>
+            <div class="list-group @if($collapse) collapse @endif no-margin-bot" id="jobs">
+                <a href="/job" class="list-group-item no-color-no-border padding @if($action == 'index' && $controller == 'JobsController') active @endif">Browse Jobs</a>
+                <a href="/company/job_history/{{ \Auth::user()->company_id }}" class="list-group-item no-color-no-border padding @if($action == 'jobHistory') active @endif">Job History</a>
+                <a href="/job_progress_tracking/{{ \Auth::user()->company_id }}" class="list-group-item no-color-no-border padding @if($action == 'jobProgressTracking') active @endif">Job Progress Tracking</a>
+                <a href="/job/create" class="list-group-item no-color-no-border padding @if($action == 'create' && $controller == 'JobsController') active @endif">Create Job</a>
+            </div>
+            @else
+            <a class="list-group-item no-color-no-border" href="/job"><img src="/images/icons/Strike-100.png" width="15" height="15"/> Job</a>
             @endcan
+            @endcan
+
             @can('non-inward-user')
-
-                <li>
-                    <a href="/search_job"><img src="/images/icons/Search-100.png" width="15" height="15"/> Search Job</a>
-                </li>
+            @can('non-system-admin')
+            <a href="#bids" class="list-group-item no-color-no-border" data-toggle="collapse"><img src="/images/icons/Court Judge-100.png" width="15" height="15"/> Bid</a>
+            <div class="list-group @if($collapse) collapse @endif no-margin-bot" id="bids">
+                <a href="/company/bid_history/{{ \Auth::user()->company_id }}" class="list-group-item no-color-no-border padding @if($action == 'bidHistory') active @endif">Bid History</a>
+                <a href="/bid_progress_tracking/{{ \Auth::user()->company_id }}" class="list-group-item no-color-no-border padding @if($action == 'bidProgressTracking') active @endif">Bid Progress Tracking</a>
+                <a href="/bid/create" class="list-group-item no-color-no-border padding @if($action == 'create' && $controller == 'BidsController') active @endif">Create Bid</a>
+            </div>
+            @else
+            <a class="list-group-item no-color-no-border" href="/bid"><img src="/images/icons/Court Judge-100.png" width="15" height="15"/> Bid</a>
             @endcan
-                <li>
-                    @can('globe-admin-above')
-                    <a href="/appointments"><img src="/images/icons/Calendar-100.png" width="15" height="15"/> Appointments</a>
-                    @else
-                        <a href="/show_all_appointments/{{ \Auth::user()->company_id }}"><img src="/images/icons/Calendar-100.png" width="15" height="15"/> Appointments</a>
-                        @endcan
-                </li>
+            @endcan
 
-                <li>
-                    @can('globe-admin-above')
-                    <a href="/ticket"><img src="/images/icons/Customer Support-100.png" width="15" height="15"/> Ticket</a>
-                    @else
-                        <a href="/ticket/show_my_tickets/{{ \Auth::user()->company_id }}"><img src="/images/icons/Customer Support-100.png" width="15" height="15"/> Ticket</a>
-                        @endcan
-                </li>
+            @can('non-system-admin')
+            <a class="list-group-item no-color-no-border" href="/manage_group_user/{{ \Auth::user()->company_id }}"><img src="/images/icons/Conference-100.png" width="15" height="15"/> Manage Group User</a>
+            @endcan
 
-                <li>
-                    <a href="/rating/list_companies"><img src="/images/icons/Star-100.png" width="15" height="15"/> Rating</a>
-                </li>
+            @can('non-inward-user')
+            <a class="list-group-item no-color-no-border" href="/search_job"><img src="/images/icons/Search-100.png" width="15" height="15"/> Search Job</a>
+            @endcan
+
+            @can('globe-admin-above')
+            <a class="list-group-item no-color-no-border" href="/appointments"><img src="/images/icons/Calendar-100.png" width="15" height="15"/> Appointments</a>
+            @else
+            <a class="list-group-item no-color-no-border" href="/show_all_appointments/{{ \Auth::user()->company_id }}"><img src="/images/icons/Calendar-100.png" width="15" height="15"/> Appointments</a>
+            @endcan
+
+            @can('globe-admin-above')
+            <a class="list-group-item no-color-no-border" href="/ticket"><img src="/images/icons/Customer Support-100.png" width="15" height="15"/> Ticket</a>
+            @else
+            <a class="list-group-item no-color-no-border" href="/ticket/show_my_tickets/{{ \Auth::user()->company_id }}"><img src="/images/icons/Customer Support-100.png" width="15" height="15"/> Ticket</a>
+            @endcan
+
+            <a class="list-group-item no-color-no-border" href="/rating/list_companies"><img src="/images/icons/Star-100.png" width="15" height="15"/> Rating</a>
+
             @can('super-admin-only')
+            <a class="list-group-item no-color-no-border" href="/user_performance" ><img src="/images/icons/User Menu-100.png" width="15" height="15"/> User Performance</a>
+            @endcan
 
-                <li>
-                    <a href="/user_performance" ><img src="/images/icons/User Menu-100.png" width="15" height="15"/> User Performance</a>
-                </li>
+            @can('globe-admin-above')
+            <a class="list-group-item no-color-no-border" href="/system" ><img src="/images/icons/system.png" width="15" height="15"/> System</a>
             @endcan
             @can('globe-admin-above')
-
-                <li>
-                    <a href="/system" ><img src="/images/icons/system.png" width="15" height="15"/> System</a>
-                </li>
+            <a class="list-group-item no-color-no-border" href="/log" ><img src="/images/icons/system.png" width="15" height="15"/> Transaction Logs</a>
             @endcan
-            @can('globe-admin-above')
 
-                <li>
-                    <a href="/log" ><img src="/images/icons/system.png" width="15" height="15"/> Transaction Logs</a>
-                </li>
-            @endcan
-                <li>
-                    <a href="/report/report" ><img src="/images/icons/system.png" width="15" height="15"/> Report</a>
-                </li>
-        </ul>
+            <a class="list-group-item no-color-no-border" href="/report/report" ><img src="/images/icons/system.png" width="15" height="15"/> Report</a>
+
+        </div>
     </div>
+
+
     <!-- /#sidebar-wrapper -->
     <div class="container-fluid">
     @include('partial.flash')
@@ -199,6 +199,12 @@
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
+    });
+
+    $('.list-group-item').on('click', function() {
+        $('.glyphicon', this)
+                .toggleClass('glyphicon-chevron-right')
+                .toggleClass('glyphicon-chevron-down');
     });
 </script>
 </body>

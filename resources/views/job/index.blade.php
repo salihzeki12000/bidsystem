@@ -34,10 +34,10 @@
                     <td>
                         <form method="POST" action="/job/{{ $job->id }}" enctype="multipart/form-data" class="delete_job_form">
                             <a class="btn btn-sm btn-success" href="/job/{{ $job->id }}" title="View">View</a>
+                            @can('super-admin-only')
                             <a class="btn btn-sm btn-warning" href="/job/manage_job_files/{{ $job->id }}" title="Files">Files</a>
                             <a class="btn btn-sm btn-primary" href="/job/{{ $job->id }}/edit" title="Edit">Edit</a>
                             <a class="btn btn-sm btn-primary" href="/match/{{ $job->id }}" title="Matches">Recommended Match</a>
-                            @can('super-admin-only')
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <button class="btn btn-sm btn-danger" type="submit">Delete</button>

@@ -13,7 +13,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        app('view')->composer('app', function($view)
+        {
+            $action = app('request')->route()->getAction();
+
+            $controller = class_basename($action['controller']);
+
+            list($controller, $action) = explode('@', $controller);
+
+            $collapse = true;
+            if(in_array($action, ['jobProgressTracking', 'jobHistory','bidProgressTracking', 'bidHistory']) || (in_array($controller, ['JobsController', 'BidsController']) && in_array($action, ['create', 'index'])) ){
+                $collapse = false;
+            }
+
+            $view->with(compact('controller', 'action', 'collapse'));
+        });
     }
 
     /**

@@ -35,12 +35,17 @@ class JobsController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('globe-admin-above')) {
+        if (Gate::denies('non-outward-user')) {
             abort('403');
         }
+
+        if(\Auth::user()->type != 'super_admin' && \Auth::user()->type != 'globe_admin'){
+            $company = Company::find(\Auth::user()->company_id);
+        }
+
         $jobs = Job::where('delete', '!=', 1)->with('company', 'rfi_status', 'requirements')->select('id', 'contract_term', 'company_id', 'location_id', 'status_id')->get();
 
-        return view('job.index', compact('jobs'));
+        return view('job.index', compact('jobs', 'company'));
     }
 
     /**

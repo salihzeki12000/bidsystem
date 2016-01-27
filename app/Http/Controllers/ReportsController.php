@@ -19,12 +19,21 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     //report 1
     public function jobManagement(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $job_order = "1,4,6,5";
 
@@ -66,7 +75,12 @@ class ReportsController extends Controller
         $start_date = new Carbon($start_date);
         $end_date = new Carbon($end_date);
         $days = $end_date->diffInDays($start_date);
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $jobs = Job::with('company')->where('company_id', $company_id)->get();
         $total_valid_bids_received = 0;
@@ -123,7 +137,12 @@ class ReportsController extends Controller
     public function outsourceDistribution(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $requirements = Requirement::with(array('jobs' => function($query) use ($start_date, $end_date)
         {
@@ -157,7 +176,12 @@ class ReportsController extends Controller
         //dd($request->all());
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $bids = Bid::where('company_id', '=', $company_id)->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->get();
         $count_sales = 0;
@@ -182,7 +206,12 @@ class ReportsController extends Controller
     public function bidPerformance(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $bids = Bid::where('company_id', '=', $company_id)->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->get();
         $count_success = 0;
@@ -206,7 +235,12 @@ class ReportsController extends Controller
     public function positioningPerformance(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $bids_group_by_industry = Industry::leftJoin('company_industry', 'company_industry.industry_id', '=', 'industries.id')
             ->leftJoin('bids', function($join) use ($start_date, $end_date, $company_id)
@@ -288,7 +322,12 @@ class ReportsController extends Controller
     public function ratingPerformance(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $ratings = Rating::where('company_id', $company_id)->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->get();
         $cost = 0;
@@ -326,7 +365,12 @@ class ReportsController extends Controller
     public function outsourcingTrend(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
 
         $jobs_group_by_industry_and_location = Industry::leftJoin('company_industry', 'company_industry.industry_id', '=', 'industries.id')
@@ -373,7 +417,12 @@ class ReportsController extends Controller
     public function lspDistribution(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $company_id = $request->company_id;
+
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }else{
+            $company_id = $request->company_id;
+        }
 
         $job_ids = Job::where('jobs.created_at', '>=', $start_date)->where('jobs.created_at', '<=', $end_date)->lists('id');
         $requirements = Requirement::with(array('jobs' => function($query) use ($start_date, $end_date)
@@ -601,6 +650,9 @@ class ReportsController extends Controller
      */
     public function index()
     {
-        return view('report.report');
+        if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin'){
+            $companies = Company::lists('company_name', 'id');
+        }
+        return view('report.report', compact('companies'));
     }
 }

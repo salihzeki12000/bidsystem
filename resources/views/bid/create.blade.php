@@ -1,4 +1,4 @@
-@extends('content_with_sidebar')
+@extends('app')
 @section('style')
         <!-- WYSIWYG editor -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -6,23 +6,8 @@
 <script type="text/javascript" src="/js/summernote.min.js"></script>
 @endsection
 
-@section('sidebar')
-    @can('outward-user-only')
-    <ul class="nav nav-sidebar">
-        <h4 class="text-center">{{ $company->company_name }}</h4>
-    </ul>
-    @endcan
-    <ul class="nav nav-sidebar">
-        @can('outward-user-only')
-        <li><a href="/company/bid_history/{{ $company->id }}">Bid History</a></li>
-        <li><a href="/bid_progress_tracking/{{ $company->id }}">Bid Progress Tracking</a></li>
-        @endcan
-        <li class="active"><a href="/bid/create">Create Bid</a></li>
-    </ul>
-@endsection
-
 @section('content')
-    <div class="row">
+    <div class="col-sm-12">
         <form id="bid_form" class="form-horizontal" role="form" method="POST" action="/bid" enctype="multipart/form-data">
             <h4>Submit New Bid</h4>
             <br>

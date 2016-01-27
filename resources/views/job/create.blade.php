@@ -1,4 +1,4 @@
-@extends('content_with_sidebar')
+@extends('app')
 @section('style')
         <!-- WYSIWYG editor -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -6,22 +6,8 @@
 <script type="text/javascript" src="/js/summernote.min.js"></script>
 @endsection
 
-@section('sidebar')
-    @can('inward-user-only')
-    <ul class="nav nav-sidebar">
-        <h4 class="text-center">{{ $company->company_name }}</h4>
-    </ul>
-    @endcan
-    <ul class="nav nav-sidebar">
-        @can('inward-user-only')
-        <li><a href="/company/job_history/{{ $company->id }}">Job History</a></li>
-        <li><a href="/job_progress_tracking/{{ $company->id }}">Job Progress Tracking</a></li>
-        @endcan
-        <li class="active"><a href="/job/create">Create Job<span class="sr-only">(current)</span></a></li>
-    </ul>
-@endsection
-
 @section('content')
+    <div class="col-sm-12">
         <form id="job_form" class="form-horizontal" role="form" method="POST" action="/job" enctype="multipart/form-data">
             <div class="row">
                 <h4>Submit New Job</h4>
@@ -39,155 +25,155 @@
                                 </ul>
                             </div>
                         @endif
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
-                            @if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin')
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label">Company</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="admin_company">
-                                            @foreach($companies as $company)
-                                                <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            @endif
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+                        @if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin')
                             <div class="form-group">
-                                <label class="col-md-4 control-label">Date</label>
+                                <label class="col-md-4 control-label">Company</label>
                                 <div class="col-md-6">
-                                    <div class='input-group date' id='date'>
-                                        <input type='text' class="form-control" name="date"/>
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Location</label>
-                                <div class="col-md-6">
-                                    <select class="form-control" name="location">
-                                        @foreach($locations as $location)
-                                            <option value="{{ $location->id }}">{{ $location->town.'/'.$location->state.'/'.$location->country.' ('.$location->postcode.')' }}</option>
+                                    <select class="form-control" name="admin_company">
+                                        @foreach($companies as $company)
+                                            <option value="{{ $company->id }}">{{ $company->company_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="form-group required">
-                                <label class="col-md-4 control-label">Requirement</label>
-                                <div class="col-md-6">
-                                    @foreach($requirements as $requirement)
-                                        <div class="checkbox">
-                                            <label>
-                                                <input class="requirement" type="checkbox" name="requirement[]" value="{{ $requirement->id }}"> {{ $requirement->requirement }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <div class="form-group required">
-                                <label class="col-md-4 control-label">Potential</label>
-                                <div class="col-md-6">
-                                    @foreach($potentials as $potential)
-                                        <div class="checkbox">
-                                            <label>
-                                                <input class="potential" type="checkbox" name="potential[]" value="{{ $potential->id }}"> {{ $potential->potential }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <div class="form-group required">
-                                <label class="col-md-4 control-label">Highlight</label>
-                                <div class="col-md-6">
-                                    @foreach($highlights as $highlight)
-                                        <div class="checkbox">
-                                            <label>
-                                                <input class="highlight" type="checkbox" name="highlight[]" value="{{ $highlight->id }}"> {{ $highlight->highlight }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Special Request</label>
-                                <div class="col-md-6">
-                                    <textarea style="resize: vertical;" class="form-control" name="special_request">{{ old('special_request') }}</textarea>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Existing Budget</label>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="existing_budget" value="{{ old('existing_budget') }}">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Existing LSP</label>
-                                <div class="col-md-6">
-                                    <select class="form-control" name="existing_lsp">
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Contract Term</label>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="contract_term" value="{{ old('contract_term') }}">
-                                </div>
-                            </div>
-
-                            <div class="form-group required">
-                                <label class="col-md-4 control-label">Close Date/Time</label>
-                                <div class="col-md-6">
-                                    <div class='input-group date' id='close_date'>
-                                        <input type='text' class="form-control" name="close_date" required/>
+                        @endif
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Date</label>
+                            <div class="col-md-6">
+                                <div class='input-group date' id='date'>
+                                    <input type='text' class="form-control" name="date"/>
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Announcement Date/Time</label>
-                                <div class="col-md-6">
-                                    <div class='input-group date' id='announcement_date'>
-                                        <input type='text' class="form-control" name="announcement_date"/>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Location</label>
+                            <div class="col-md-6">
+                                <select class="form-control" name="location">
+                                    @foreach($locations as $location)
+                                        <option value="{{ $location->id }}">{{ $location->town.'/'.$location->state.'/'.$location->country.' ('.$location->postcode.')' }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label">Requirement</label>
+                            <div class="col-md-6">
+                                @foreach($requirements as $requirement)
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="requirement" type="checkbox" name="requirement[]" value="{{ $requirement->id }}"> {{ $requirement->requirement }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label">Potential</label>
+                            <div class="col-md-6">
+                                @foreach($potentials as $potential)
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="potential" type="checkbox" name="potential[]" value="{{ $potential->id }}"> {{ $potential->potential }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label">Highlight</label>
+                            <div class="col-md-6">
+                                @foreach($highlights as $highlight)
+                                    <div class="checkbox">
+                                        <label>
+                                            <input class="highlight" type="checkbox" name="highlight[]" value="{{ $highlight->id }}"> {{ $highlight->highlight }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Special Request</label>
+                            <div class="col-md-6">
+                                <textarea style="resize: vertical;" class="form-control" name="special_request">{{ old('special_request') }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Existing Budget</label>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="existing_budget" value="{{ old('existing_budget') }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Existing LSP</label>
+                            <div class="col-md-6">
+                                <select class="form-control" name="existing_lsp">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Contract Term</label>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="contract_term" value="{{ old('contract_term') }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label">Close Date/Time</label>
+                            <div class="col-md-6">
+                                <div class='input-group date' id='close_date'>
+                                    <input type='text' class="form-control" name="close_date" required/>
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">Outsource Date/Time</label>
-                                <div class="col-md-6">
-                                    <div class='input-group date' id='outsource_date'>
-                                        <input type='text' class="form-control" name="outsource_date"/>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Announcement Date/Time</label>
+                            <div class="col-md-6">
+                                <div class='input-group date' id='announcement_date'>
+                                    <input type='text' class="form-control" name="announcement_date"/>
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {{--<div class="form-group">--}}
-                                {{--<label class="col-md-4 control-label">Keyword</label>--}}
-                                {{--<div class="col-md-6">--}}
-                                    {{--<textarea style="resize: vertical;" class="form-control" name="keyword">{{ old('keyword') }}</textarea>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Outsource Date/Time</label>
+                            <div class="col-md-6">
+                                <div class='input-group date' id='outsource_date'>
+                                    <input type='text' class="form-control" name="outsource_date"/>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{--<div class="form-group">--}}
+                        {{--<label class="col-md-4 control-label">Keyword</label>--}}
+                        {{--<div class="col-md-6">--}}
+                        {{--<textarea style="resize: vertical;" class="form-control" name="keyword">{{ old('keyword') }}</textarea>--}}
+                        {{--</div>--}}
+                        {{--</div>--}}
                     </div>
                 </div>
 
@@ -206,6 +192,7 @@
                 <br>
             </div>
         </form>
+    </div>
 @endsection
 @section('script')
     <script type="text/javascript">
