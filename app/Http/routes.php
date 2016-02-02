@@ -128,16 +128,7 @@ Route::get('log','SystemLogsController@index');
 //reports
 Route::get('report/report','ReportsController@index');
 Route::post('report/job_management','ReportsController@jobManagement');
-Route::post('report/job_performance','ReportsController@jobPerformance');
-Route::post('report/compare_budget','ReportsController@compareBudget');
-Route::post('report/bid_performance','ReportsController@bidPerformance');
-Route::post('report/rating_performance','ReportsController@ratingPerformance');
-Route::post('report/outsourcing_trend','ReportsController@outsourcingTrend');
-Route::get('report/generate_csv_from_view','ReportsController@generateCsvFromView');
-Route::post('report/outsource_distribution','ReportsController@outsourceDistribution');
-Route::post('report/lsp_distribution','ReportsController@lspDistribution');
-Route::post('report/target_management','ReportsController@targetManagement');
-Route::post('report/positioning_performance','ReportsController@positioningPerformance');
+Route::post('report/export_report','ReportsController@exportReport');
 Route::post('report/compare_report','ReportsController@compareReport');
 
 Route::controllers([

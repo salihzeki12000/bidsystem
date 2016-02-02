@@ -57,6 +57,11 @@ class Job extends Model
         return $this->belongsTo('App\Company', 'company_id');
     }
 
+    public function company_logo()
+    {
+        return $this->belongsTo('App\Company', 'company_id')->select(array('id', 'logo'));
+    }
+
     public function rfi_status()
     {
         return $this->belongsTo('App\RfiState', 'status_id');

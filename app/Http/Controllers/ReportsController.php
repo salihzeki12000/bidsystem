@@ -24,15 +24,53 @@ class ReportsController extends Controller
         $this->middleware('auth');
     }
 
-    //report 1
-    public function jobManagement(Request $request){
+    public function exportReport(Request $request){
+        //dd($request->all());
         $start_date = $request->start_date;
         $end_date = $request->end_date;
+        $report_type = $request->report_type;
+        $export_type = $request->export_type;
+        $company_id = $request->company_id;
+
+        switch($report_type){
+            case "1":
+                return $this->jobManagement($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "2":
+                return $this->jobPerformance($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "3":
+                return $this->compareBudget($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "4":
+                return $this->outsourceDistribution($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "5":
+                return $this->targetManagement($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "6":
+                return $this->bidPerformance($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "7":
+                return $this->positioningPerformance($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "8":
+                return $this->ratingPerformance($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "9":
+                return $this->outsourcingTrend($start_date, $end_date, $export_type, $company_id);
+                break;
+            case "10":
+                return $this->lspDistribution($start_date, $end_date, $export_type, $company_id);
+                break;
+        }
+    }
+
+    //report 1
+    public function jobManagement($start_date, $end_date, $export_type, $company_id){
 
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $job_order = "1,4,6,5";
@@ -64,30 +102,36 @@ class ReportsController extends Controller
             }
         }
 
-        //return response()->json(['result' => $jobs]);
-        return view('report.report_1', compact('jobs', 'count_draft', 'count_published', 'count_canceled', 'count_awarded'));
+        if($export_type == 'report'){
+            return view('report.report_1', compact('jobs', 'count_draft', 'count_published', 'count_canceled', 'count_awarded'));
+        }else{
+            Excel::create('Job Management Report', function($excel) use ($jobs, $count_draft, $count_published, $count_canceled, $count_awarded) {
+
+                $excel->sheet('New sheet', function($sheet) use ($jobs, $count_draft, $count_published, $count_canceled, $count_awarded) {
+
+                    $sheet->loadView('report.report_1', array('jobs' => $jobs, 'count_draft' => $count_draft, 'count_published' => $count_published, 'count_canceled' => $count_canceled, 'count_awarded' => $count_awarded));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 2
-    public function jobPerformance(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+    public function jobPerformance($start_date, $end_date, $export_type, $company_id){
         $start_date = new Carbon($start_date);
         $end_date = new Carbon($end_date);
         $days = $end_date->diffInDays($start_date);
 
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
-        $jobs = Job::with('company')->where('company_id', $company_id)->get();
+        $jobs = Job::with('company')->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->where('company_id', $company_id)->get();
         $total_valid_bids_received = 0;
 
         if($days > 0){
             foreach($jobs as $job_key => $job){
-                $performance = 0;
                 $total_valid_bids_posted = $job->valid_bids()->count();
                 $total_valid_bids_received+=$total_valid_bids_posted;
                 $performance = round($total_valid_bids_posted / $days, 3);
@@ -97,17 +141,28 @@ class ReportsController extends Controller
             }
         }
 
-        //return response()->json(['result' => $jobs]);
-        return view('report.report_2', compact('jobs', 'total_valid_bids_received'));
+        if($export_type == 'report'){
+            return view('report.report_2', compact('jobs', 'total_valid_bids_received'));
+        }else{
+            Excel::create('Job Performance Report', function($excel) use ($jobs, $total_valid_bids_received) {
+
+                $excel->sheet('New sheet', function($sheet) use ($jobs, $total_valid_bids_received) {
+
+                    $sheet->loadView('report.report_2', array('jobs' => $jobs, 'total_valid_bids_received' => $total_valid_bids_received));
+
+                });
+
+            })->export('csv');
+        }
     }
 
 
     //report 3
-    public function compareBudget(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-
-        $jobs = Job::with('valid_bids')->get();
+    public function compareBudget($start_date, $end_date, $export_type, $company_id){
+        if(\Auth::user()->company_id){
+            $company_id = \Auth::user()->company_id;
+        }
+        $jobs = Job::with('valid_bids')->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->where('company_id', $company_id)->get();
 
         foreach($jobs as $job_key => $job){
             $count_higher_price = 0;
@@ -129,25 +184,32 @@ class ReportsController extends Controller
             $jobs[$job_key]['equal_budget'] = $count_equal_price;
         }
 
-        //return response()->json(['result' => $jobs]);
-        return view('report.report_3', compact('jobs'));
+        if($export_type == 'report'){
+            return view('report.report_3', compact('jobs'));
+        }else{
+            Excel::create('Positioning Management Report', function($excel) use ($jobs) {
+
+                $excel->sheet('New sheet', function($sheet) use ($jobs) {
+
+                    $sheet->loadView('report.report_3', array('jobs' => $jobs));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 4
-    public function outsourceDistribution(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-
+    public function outsourceDistribution($start_date, $end_date, $export_type, $company_id){
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $requirements = Requirement::with(array('jobs' => function($query) use ($start_date, $end_date)
         {
             $query->where('jobs.created_at', '>=', $start_date)->where('jobs.created_at', '<=', $end_date);
         }))->get();
+
         foreach($requirements as $requirement_key => $requirement){
             $total_jobs = count($requirement->jobs);
             $total_jobs_post_by_current_company = 0;
@@ -167,20 +229,26 @@ class ReportsController extends Controller
             $requirements[$requirement_key]['percentage'] = $percentage;
         }
 
-        //return response()->json(['result' => $requirements]);
-        return view('report.report_4', compact('requirements'));
+        if($export_type == 'report'){
+            return view('report.report_4', compact('requirements'));
+        }else{
+            Excel::create('Potential Overview Report', function($excel) use ($requirements) {
+
+                $excel->sheet('New sheet', function($sheet) use ($requirements) {
+
+                    $sheet->loadView('report.report_4', array('requirements' => $requirements));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 5
-    public function targetManagement(Request $request){
-        //dd($request->all());
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+    public function targetManagement($start_date, $end_date, $export_type, $company_id){
 
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $bids = Bid::where('company_id', '=', $company_id)->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->get();
@@ -197,20 +265,27 @@ class ReportsController extends Controller
             }
         }
 
-        //return response()->json(['result' => bids]);
-        return view('report.report_5', compact('bids', 'count_sales', 'count_open_bids'));
+        if($export_type == 'report'){
+            return view('report.report_5', compact('bids', 'count_sales', 'count_open_bids'));
+        }else{
+            Excel::create('Target Management Report', function($excel) use ($bids, $count_sales, $count_open_bids) {
+
+                $excel->sheet('New sheet', function($sheet) use ($bids, $count_sales, $count_open_bids) {
+
+                    $sheet->loadView('report.report_5', array('bids' => $bids, 'count_sales' => $count_sales, 'count_open_bids' => $count_open_bids));
+
+                });
+
+            })->export('csv');
+        }
     }
 
 
     //report 6
-    public function bidPerformance(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+    public function bidPerformance($start_date, $end_date, $export_type, $company_id){
 
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $bids = Bid::where('company_id', '=', $company_id)->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->get();
@@ -227,19 +302,26 @@ class ReportsController extends Controller
             }
         }
 
-        //return response()->json(['result' => $companies]);
-        return view('report.report_6', compact('bids', 'count_success', 'count_failure'));
+        if($export_type == 'report'){
+            return view('report.report_6', compact('bids', 'count_success', 'count_failure'));
+        }else{
+            Excel::create('Bid Performance Report', function($excel) use ($bids, $count_success, $count_failure) {
+
+                $excel->sheet('New sheet', function($sheet) use ($bids, $count_success, $count_failure) {
+
+                    $sheet->loadView('report.report_6', array('bids' => $bids, 'count_success' => $count_success, 'count_failure' => $count_failure));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 7
-    public function positioningPerformance(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+    public function positioningPerformance($start_date, $end_date, $export_type, $company_id){
 
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $bids_group_by_industry = Industry::leftJoin('company_industry', 'company_industry.industry_id', '=', 'industries.id')
@@ -255,7 +337,6 @@ class ReportsController extends Controller
             ->groupBy('industries.industry', 'bids.status_id')
             ->get();
 
-        //dd($bids_group_by_industry->toArray());
         $refined_bids_group_by_industry_array = array();
         if(count($bids_group_by_industry) > 0){
             foreach($bids_group_by_industry as $bid_key => $bid){
@@ -277,7 +358,6 @@ class ReportsController extends Controller
                 }
             }
         }
-        //dd($refined_bids_group_by_industry_array);
 
         $bids_group_by_location = CountryStateTown::leftJoin('jobs', 'jobs.location_id', '=', 'country_state_towns.id')
             ->leftJoin('bids', function($join) use ($start_date, $end_date, $company_id)
@@ -312,21 +392,26 @@ class ReportsController extends Controller
                 }
             }
         }
-        //dd($refined_bids_group_by_location_array);
 
-        //return response()->json(['result' => $companies]);
-        return view('report.report_7', compact('refined_bids_group_by_industry_array', 'refined_bids_group_by_location_array'));
+        if($export_type == 'report'){
+            return view('report.report_7', compact('refined_bids_group_by_industry_array', 'refined_bids_group_by_location_array'));
+        }else{
+            Excel::create('Positioning Performance Report', function($excel) use ($refined_bids_group_by_industry_array, $refined_bids_group_by_location_array) {
+
+                $excel->sheet('New sheet', function($sheet) use ($refined_bids_group_by_industry_array, $refined_bids_group_by_location_array) {
+
+                    $sheet->loadView('report.report_7', array('refined_bids_group_by_industry_array' => $refined_bids_group_by_industry_array, 'refined_bids_group_by_location_array' => $refined_bids_group_by_location_array));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 8
-    public function ratingPerformance(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-
+    public function ratingPerformance($start_date, $end_date, $export_type, $company_id){
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $ratings = Rating::where('company_id', $company_id)->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date)->get();
@@ -355,23 +440,26 @@ class ReportsController extends Controller
             'total_star' => count($ratings) * 5
         );
 
-        //dd($refined_rating_array);
+        if($export_type == 'report'){
+            return view('report.report_8', compact('refined_rating_array'));
+        }else{
+            Excel::create('Rating Performance Report', function($excel) use ($refined_rating_array) {
 
-        //return response()->json(['result' => $refined_rating_array]);
-        return view('report.report_8', compact('refined_rating_array'));
+                $excel->sheet('New sheet', function($sheet) use ($refined_rating_array) {
+
+                    $sheet->loadView('report.report_8', array('refined_rating_array' => $refined_rating_array));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 9
-    public function outsourcingTrend(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-
+    public function outsourcingTrend($start_date, $end_date, $export_type, $company_id){
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
-
 
         $jobs_group_by_industry_and_location = Industry::leftJoin('company_industry', 'company_industry.industry_id', '=', 'industries.id')
             ->leftJoin('jobs', function($join) use ($start_date, $end_date, $company_id)
@@ -386,8 +474,6 @@ class ReportsController extends Controller
             ->select(\DB::raw('count(jobs.id) as count, country_state_towns.state, industries.industry, industries.id, country_state_towns.id as location_id'))
             ->groupBy('industries.industry', 'country_state_towns.state')
             ->get();
-
-        //dd($jobs_group_by_industry_and_location->toArray());
 
         $refined_array = array();
         $states = array();
@@ -407,21 +493,26 @@ class ReportsController extends Controller
             }
         }
 
-        //dd($refined_array);
+        if($export_type == 'report'){
+            return view('report.report_9', compact('refined_array', 'states'));
+        }else{
+            Excel::create('Outsourcing Trend Report', function($excel) use ($refined_array, $states) {
 
-        //return response()->json(['result' => $users]);
-        return view('report.report_9', compact('refined_array', 'states'));
+                $excel->sheet('New sheet', function($sheet) use ($refined_array, $states) {
+
+                    $sheet->loadView('report.report_9', array('refined_array' => $refined_array, 'states' => $states));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     //report 10
-    public function lspDistribution(Request $request){
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+    public function lspDistribution($start_date, $end_date, $export_type, $company_id){
 
         if(\Auth::user()->company_id){
             $company_id = \Auth::user()->company_id;
-        }else{
-            $company_id = $request->company_id;
         }
 
         $job_ids = Job::where('jobs.created_at', '>=', $start_date)->where('jobs.created_at', '<=', $end_date)->lists('id');
@@ -465,8 +556,19 @@ class ReportsController extends Controller
             $requirements[$requirement_key]['bid_percentage'] = $bid_percentage;
         }
 
-        //return response()->json(['result' => $requirements]);
-        return view('report.report_10', compact('requirements'));
+        if($export_type == 'report'){
+            return view('report.report_10', compact('requirements'));
+        }else{
+            Excel::create('Future Demands Report', function($excel) use ($requirements) {
+
+                $excel->sheet('New sheet', function($sheet) use ($requirements) {
+
+                    $sheet->loadView('report.report_10', array('requirements' => $requirements));
+
+                });
+
+            })->export('csv');
+        }
     }
 
     public function compareReport(Request $request){
@@ -631,27 +733,13 @@ class ReportsController extends Controller
         return view('report.compare_report', compact('job', 'bids'));
     }
 
-    public function generateCsvFromView(){
-        $jobs = DB::select('SELECT MONTH(created_at) as month, company_id, COUNT(id) as number_of_jobs FROM jobs GROUP BY MONTH(created_at), company_id');
-
-        Excel::create('New file', function($excel) use ($jobs) {
-
-            $excel->sheet('New sheet', function($sheet) use ($jobs) {
-
-                $sheet->loadView('report.outsourcing_trend', array('jobs' => $jobs));
-
-            });
-
-        })->export('csv');
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         if(\Auth::user()->type == 'super_admin' || \Auth::user()->type == 'globe_admin'){
-            $companies = Company::lists('company_name', 'id');
+            $companies = Company::where('delete', 0)->lists('company_name', 'id');
         }
         return view('report.report', compact('companies'));
     }

@@ -663,13 +663,15 @@ class JobsController extends Controller
                 }
 
                 if(!empty($request->location) && !empty($final_array)){
-                    $jobs = Job::whereIn('location_id', $request->location)->whereIn('id', $final_array)->with('location', 'requirements')->get();
+                    $jobs = Job::whereIn('location_id', $request->location)->whereIn('id', $final_array)->with('location', 'requirements', 'company_logo')->get();
                 }else if(!empty($request->location) && empty($final_array)){
-                    $jobs = Job::whereIn('location_id', $request->location)->with('location', 'requirements')->get();
+                    $jobs = Job::whereIn('location_id', $request->location)->with('location', 'requirements', 'company_logo')->get();
                 }else if(empty($request->location) && !empty($final_array)){
-                    $jobs = Job::whereIn('id', $final_array)->with('location', 'requirements')->get();
+                    $jobs = Job::whereIn('id', $final_array)->with('location', 'requirements', 'company_logo')->get();
                 }
             }
+
+            //dd($jobs->toArray());
         }
 
         return view('job.show_search_job_result', compact('jobs', 'search_locations', 'search_industries', 'search_requirements', 'keyword', 'return_empty_result'));
