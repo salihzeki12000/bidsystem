@@ -22,7 +22,12 @@
             @foreach($jobs as $job)
                 <tr>
                     <td><a href="/job/{{ $job->id }}" target="_blank">{{ $job->id }}</a></td>
-                    <td><a href="/company/{{ $job->company_id }}" target="_blank">{{ $job->company->company_name }}</a></td>
+                    <td class="text-center">
+                        <a href="/company/{{ $job->company_id }}" target="_blank">
+                            <img src="{{ $job->company->logo }}" style="max-width: 100px;"><br>
+                            {{ $job->company->company_name }}
+                        </a>
+                    </td>
                     <td>{{ $job->location->town.','.$job->location->state.','.$job->location->country.' '.$job->location->postcode }}</td>
                     <td>
                         @if(count($job->requirements) > 0)
