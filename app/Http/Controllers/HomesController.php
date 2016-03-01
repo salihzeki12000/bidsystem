@@ -112,7 +112,23 @@ class HomesController extends Controller
             }
 
             $new_lsp = Company::where('delete', '0')->where('category', 'LSP')->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
-            $new_outsourcer = Company::where('delete', '0')->where('category', 'Outsourcing')->where('created_at', '>=', Carbon::now()->startOfMonth())->where('created_at', '<=', Carbon::now()->endOfMonth())->get();
+            $new_outsourcer = Company::join('company_industry', 'companies.id', '=', 'company_industry.company_id')
+                ->join('industries', 'industries.id', '=', 'company_industry.industry_id')
+                ->select(\DB::raw('count(companies.id) as count, industries.industry'))
+                ->where('companies.delete', '0')
+                ->where('companies.category', 'LSP')
+                ->where('companies.created_at', '>=', Carbon::now()->startOfMonth())
+                ->where('companies.created_at', '<=', Carbon::now()->endOfMonth())
+                ->groupBy('industries.industry')
+                ->get();
+            $total_new_outsourcer = 0;
+
+            if(count($new_outsourcer) > 0){
+                foreach($new_outsourcer as $key => $counter){
+                    $total_new_outsourcer+=$counter['count'];
+                }
+            }
+
             $current_month = Carbon::now()->month;
 
             $new_tickets = Ticket::with('company')->where('is_attended', 0)->get();
@@ -158,7 +174,7 @@ class HomesController extends Controller
                     break;
             }
         }
-        return view('home.index', compact('new_lsp', 'new_outsourcer', 'current_month', 'new_appointments_request', 'new_messages', 'incoming_bids', 'new_tickets', 'expiring_jobs', 'total_number_of_suppliers', 'new_suppliers', 'total_number_of_outsourcers', 'companies_group_by_industry', 'unbid_jobs', 'industries', 'locations', 'sum_new_jobs', 'sum_new_bids'));
+        return view('home.index', compact('new_lsp', 'new_outsourcer', 'current_month', 'new_appointments_request', 'new_messages', 'incoming_bids', 'new_tickets', 'expiring_jobs', 'total_number_of_suppliers', 'new_suppliers', 'total_number_of_outsourcers', 'companies_group_by_industry', 'unbid_jobs', 'industries', 'locations', 'sum_new_jobs', 'sum_new_bids', 'total_new_outsourcer'));
     }
 
     /**

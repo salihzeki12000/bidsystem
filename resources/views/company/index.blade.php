@@ -24,7 +24,7 @@
             @foreach($companies as $company)
                 <tr>
                     <td @if($company->status == 'Inactive') style="color: red;" @endif class="text-center">
-                        <img src="{{ $company->logo }}" style="max-width: 180px;"><br>
+                        <img src="{{ $company->logo }}" style="max-width: 50px;"><br>
                         {{ $company->company_name }}
                     </td>
                     <td @if($company->status == 'Inactive') style="color: red;" @endif>{{ $company->category }}</td>

@@ -3,7 +3,10 @@
 @section('content')
     <div class="col-sm-12">
         <div>
-            <h4>Bid ID: {{ $bid->id }}</h4>
+            <div class="row">
+                <h4 class="pull-left">Bid ID: {{ $bid->id }}</h4>
+                <a class="btn btn-primary pull-right" onclick="window.history.back();">Back</a>
+            </div>
             <br>
             @can('super-admin-only')
             <div class="panel panel-default">

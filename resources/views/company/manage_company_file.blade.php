@@ -2,8 +2,8 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <h3 class="pull-left">Documents/Files</h3>
-            <h3 class="pull-right">{{ $company->company_name }}</h3>
+            <h3 class="pull-left">{{ $company->company_name }}</h3>
+            <h3 class="pull-right">Documents/Files</h3>
         </div>
         <hr>
 

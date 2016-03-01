@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\FileType;
 use App\Job;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -16,6 +17,7 @@ use App\AppointmentObjectives;
 use Gate;
 use App\TicketAdminEmail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 class SystemConfigurationsController extends Controller
 {
@@ -115,6 +117,18 @@ class SystemConfigurationsController extends Controller
                     $id = $new_appointment->id;
                 }
                 break;
+            case 'file_type':
+                $file_type_array = array(
+                    'file_type' => $request->value,
+                    'status' => 'Active',
+                    'created_by' => \Auth::user()->id
+                );
+                $new_file_type = FileType::create($file_type_array);
+                if($new_file_type) {
+                    $status = true;
+                    $id = $new_file_type->id;
+                }
+                break;
         }
 
         return response()->json(['status' => $status, 'id' => $id]);
@@ -189,6 +203,15 @@ class SystemConfigurationsController extends Controller
                     $status = true;
                 }
                 break;
+            case 'file_type':
+                $file_type = FileType::findOrFail($request->id);
+                $file_type->file_type = $request->value;
+                $file_type->modified_by = \Auth::user()->id;
+
+                if($file_type->save()){
+                    $status = true;
+                }
+                break;
         }
 
         return response()->json(['status' => $status]);
@@ -232,6 +255,11 @@ class SystemConfigurationsController extends Controller
                     $status = true;
                 }
                 break;
+            case 'file_type':
+                if(FileType::where('id', $request->id)->delete()) {
+                    $status = true;
+                }
+                break;
         }
 
         return response()->json(['status' => $status]);
@@ -255,8 +283,9 @@ class SystemConfigurationsController extends Controller
         $ticket_categories = TicketCategory::lists('name', 'id');
         $appointment_objectives = AppointmentObjectives::all();
         $email = TicketAdminEmail::first();
+        $file_types = FileType::lists('file_type', 'id');
 
-        return view('system.index', compact('industries', 'highlights', 'potentials', 'locations', 'requirements', 'ticket_categories', 'appointment_objectives', 'email', 'expired_jobs'));
+        return view('system.index', compact('industries', 'highlights', 'potentials', 'locations', 'requirements', 'ticket_categories', 'appointment_objectives', 'email', 'expired_jobs', 'file_types'));
     }
 
     /**

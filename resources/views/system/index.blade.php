@@ -288,6 +288,40 @@
         </div>
 
         <div class="col-sm-12">
+            <div class="panel-group" id="file_type" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#file_types" href="#file_types_collapse" aria-expanded="true" aria-controls="file_types_collapse">
+                                <h4>
+                                    File Types
+                                </h4>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="file_types_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body file_type">
+                            @if(count($file_types) > 0)
+                                <ul class="list-group">
+                                    @foreach($file_types as $file_types_key => $file_type)
+                                        <div id="file_type_div_{{ $file_types_key }}">
+                                            <input name="file_type" value="{{ $file_type }}" id="file_type_{{ $file_types_key }}" />
+                                            <a class="btn btn-sm btn-primary edit_btn" data-type="file_type" data-id="{{ $file_types_key }}">Save</a>
+                                            <a class="btn btn-sm btn-danger delete_btn" data-type="file_type" data-id="{{ $file_types_key }}">Delete</a>
+                                            <div class="clearfix"></div>
+                                            <br>
+                                        </div>
+                                    @endforeach
+                                </ul>
+                            @endif
+                            <a class="btn btn-sm btn-default add_btn" data-type="file_type">Add</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12">
             <div class="panel-group" id="support" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="headingOne">

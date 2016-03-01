@@ -1,23 +1,9 @@
-@extends('content_with_sidebar')
-@section('sidebar')
-    @can('outward-user-only')
-    <ul class="nav nav-sidebar">
-        <h4 class="text-center">{{ $company->company_name }}</h4>
-    </ul>
-    @endcan
-    <ul class="nav nav-sidebar">
-        @can('outward-user-only')
-        <li class="active"><a href="/company/bid_history/{{ $company->id }}">Bid History</a></li>
-        <li><a href="/bid_progress_tracking/{{ $company->id }}">Bid Progress Tracking</a></li>
-        @endcan
-        <li><a href="/bid/create">Create Bid</a></li>
-    </ul>
-@endsection
+@extends('app')
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <h3 class="pull-left">Documents/Files</h3>
-            <h3 class="pull-right">Bid ID: {{ $bid->id }}</h3>
+            <h3 class="pull-left">Bid ID: {{ $bid->id }}</h3>
+            <h3 class="pull-right">Documents/Files</h3>
         </div>
         <hr>
 

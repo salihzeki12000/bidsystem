@@ -3,7 +3,10 @@
 @section('content')
     <div class="col-sm-12">
             <div>
-                <h4>View Company</h4>
+                <div class="row">
+                    <h4 class="pull-left">View Company</h4>
+                    <a class="btn btn-primary pull-right" onclick="window.history.back();">Back</a>
+                </div>
                 <br>
                 <div class="panel panel-default">
                     <div class="panel-heading">Profile</div>

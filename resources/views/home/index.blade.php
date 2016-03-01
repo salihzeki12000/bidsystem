@@ -397,13 +397,14 @@
                         <div id="lspPanel" class="panel-collapse collapse @if(count($new_lsp) > 0) in @endif" role="tabpanel" aria-labelledby="headingLsp">
                             <div class="panel-body">
                                 @if(count($new_lsp) > 0)
-                                    <ul class="list-group">
-                                        @foreach($new_lsp as $lsp)
-                                            <li class="list-group-item">
-                                                <a href="/company/{{ $lsp->id }}" target="_blank">{{ $lsp->company_name }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                                    Total {{ count($new_lsp) }} new LSPs in past 30 days.
+                                    {{--<ul class="list-group">--}}
+                                        {{--@foreach($new_lsp as $lsp)--}}
+                                            {{--<li class="list-group-item">--}}
+                                                {{--<a href="/company/{{ $lsp->id }}" target="_blank">{{ $lsp->company_name }}</a>--}}
+                                            {{--</li>--}}
+                                        {{--@endforeach--}}
+                                    {{--</ul>--}}
                                 @else
                                     <p>No new LSP registered in last 30 days.</p>
                                 @endif
@@ -421,21 +422,20 @@
                                 <a role="button" data-toggle="collapse" data-parent="#outsourcer" href="#outsourcerPanel" aria-expanded="true" aria-controls="outsourcer">
                                     <h5>
                                         New Outsourcer in last 30 days
-                                        <span class="badge pull-right">{{ count($new_outsourcer) }}</span>
+                                        <span class="badge pull-right">{{ $total_new_outsourcer }}</span>
                                     </h5>
                                 </a>
                             </h4>
                         </div>
-                        <div id="outsourcerPanel" class="panel-collapse collapse @if(count($new_outsourcer) > 0) in @endif" role="tabpanel" aria-labelledby="headingOutsourcer">
+                        <div id="outsourcerPanel" class="panel-collapse collapse @if($total_new_outsourcer > 0) in @endif" role="tabpanel" aria-labelledby="headingOutsourcer">
                             <div class="panel-body">
                                 @if(count($new_outsourcer) > 0)
-                                    <ul class="list-group">
-                                        @foreach($new_outsourcer as $outsourcer)
-                                            <li class="list-group-item">
-                                                <a href="/company/{{ $outsourcer->id }}" target="_blank">{{ $outsourcer->company_name }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                                    @foreach($new_outsourcer as $key => $outsourcer)
+                                        <p>
+                                            {{ $outsourcer['industry'] }}
+                                            <span class="pull-right">{{ $outsourcer['count'] }}</span>
+                                        </p>
+                                    @endforeach
                                 @else
                                     <p>No new outsourcer registered in last 30 days.</p>
                                 @endif

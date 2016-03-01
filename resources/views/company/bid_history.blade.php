@@ -41,6 +41,7 @@
         </div>
         <div class="clearfix"></div>
         <br>
+        <a class="btn btn-primary" onclick="window.history.back();">Back</a>
     </div>
 @endsection
 @section('script')
