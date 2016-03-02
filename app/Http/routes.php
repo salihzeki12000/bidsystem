@@ -62,6 +62,8 @@ Route::get('search_job', 'JobsController@searchJob');
 Route::post('show_search_job_result', 'JobsController@showSearchJobResult');
 Route::get('job_progress_tracking/{id}','CompaniesController@jobProgressTracking');
 Route::get('job/compare_lsps/{id}','JobsController@compareLsps');
+Route::get('show_opened_jobs','JobsController@showOpenedJobs');
+Route::post('close_jobs','JobsController@closeJobs');
 
 //job files
 Route::get('job/manage_job_files/{id}','JobsController@manageJobFiles');

@@ -592,8 +592,6 @@ class JobsController extends Controller
         $return_empty_result = false;
         $jobs = array();
 
-
-
         if(!empty($keyword)){
             if(!empty($request->requirement)){
                 $job_ids_with_these_requirements = JobRequirement::whereIn('requirement_id', $request->requirement)->distinct()->lists('job_id')->toArray();
@@ -607,6 +605,7 @@ class JobsController extends Controller
                     ->join('company_industry', 'company_industry.company_id', '=', 'companies.id')
                     ->select('*')
                     ->whereIn('company_industry.industry_id', $request->industry)
+                    ->where('jobs.status_id', '4')
                     ->lists('jobs.id')
                     ->toArray();
                 if(empty($job_ids_with_these_industries)){
@@ -646,6 +645,7 @@ class JobsController extends Controller
                     ->join('company_industry', 'company_industry.company_id', '=', 'companies.id')
                     ->select('*')
                     ->whereIn('company_industry.industry_id', $request->industry)
+                    ->where('jobs.status_id', '4')
                     ->lists('jobs.id')
                     ->toArray();
                 if(empty($job_ids_with_these_industries)){
@@ -698,6 +698,7 @@ class JobsController extends Controller
                     }
                 }
             }
+
         }
 
         return $status;
@@ -708,8 +709,34 @@ class JobsController extends Controller
      */
     public function compareLsps($job_id){
         $job = Job::with('valid_bids', 'valid_bids.company')->find($job_id);
-        //dd($job->toArray());
 
         return view('job.compare_lsps', compact('job'));
+    }
+
+    /**
+     * Batch update to close jobs
+     */
+    public function showOpenedJobs(){
+        $opened_jobs = Job::whereNotIn('status_id', ['5', '6', '11'])->with('company')->get();
+
+        return view('job.show_opened_jobs', compact('opened_jobs'));
+    }
+
+    /**
+     * Close jobs
+     */
+    public function closeJobs(Request $request){
+        if(!empty($request->jobs) && count($request->jobs) > 0){
+            $result = Job::whereIn('id', $request->jobs)->update(array('status_id' => 11));
+            if($result){
+                \Session::flash('success_message', 'Job has been closed successfully.');
+            }else{
+                \Session::flash('alert_message', 'Jobs cannot be closed.');
+            }
+        }else{
+            \Session::flash('alert_message', 'Nothing to update.');
+        }
+
+        return redirect('show_opened_jobs');
     }
 }

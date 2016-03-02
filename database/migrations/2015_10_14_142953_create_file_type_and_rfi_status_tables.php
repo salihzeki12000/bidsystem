@@ -160,6 +160,13 @@ class CreateFileTypeAndRfiStatusTables extends Migration
                 'status' => 'Active'
             )
         );
+        DB::table('rfi_status')->insert(
+            array(
+                'rfi_status' => 'Closed',
+                'available_for_job' => 1,
+                'status' => 'Active'
+            )
+        );
     }
 
     /**
