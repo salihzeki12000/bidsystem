@@ -35,7 +35,7 @@ class UsersController extends Controller
     public function create()
     {
         $this->authorize('create', User::class);
-        $companies = Company::get();
+        $companies = Company::where('delete', 0)->get();
         return view('user.create', compact('companies'));
     }
 
@@ -151,11 +151,11 @@ class UsersController extends Controller
         $this->authorize('view_user_list', User::class);
         $user = User::findOrFail($id);
         if($user->type == 'inward_group_admin' || $user->type == 'inward_group_user'){
-            $companies = Company::where('category', 'Outsourcing')->get();
+            $companies = Company::where('category', 'Outsourcing')->where('delete', 0)->get();
         }elseif($user->type == 'outward_group_admin' || $user->type == 'outward_group_user'){
-            $companies = Company::where('category', 'LSP')->get();
+            $companies = Company::where('category', 'LSP')->where('delete', 0)->get();
         }else{
-            $companies = Company::get();
+            $companies = Company::where('delete', 0)->get();
         }
 
         return view('user.edit', compact('user', 'companies'));
@@ -203,6 +203,15 @@ class UsersController extends Controller
 
         if($request->type == 'globe_admin'){
             $user->company_id = null;
+        }
+
+        if($request->company_id){
+            $company = Company::findOrFail($request->company_id);
+            $number_of_current_users = User::where('company_id', $request->company_id)->count();
+            if($company->account_quota <= $number_of_current_users){
+                \Session::flash('alert_message', 'Cannot add user to this company, because the company runs out of its account quota.');
+                return redirect()->back()->withInput();
+            }
         }
 
         if($user->save()){

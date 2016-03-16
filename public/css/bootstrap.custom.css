@@ -1,0 +1,15 @@
+/* kianchin Overwrite Bootstrap default color */
+.navbar.navbar-default 
+{
+	background-color: #E11F81;
+}
+
+.navbar-default .navbar-brand
+{
+	color: #FFFFFF;
+}
+
+.navbar-default .navbar-nav>li>a
+{
+	color: #FFFFFF;
+}

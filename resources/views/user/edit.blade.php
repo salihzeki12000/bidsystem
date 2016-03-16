@@ -61,7 +61,7 @@
                                 <label class="col-md-4 control-label">Type</label>
                                 <div class="col-md-6">
                                     <select class="form-control" name="type" id="user_type_list">
-                                        <option value="globe_admin" @if($user->type == 'globe_admin') selected @endif>Globe Admin</option>
+                                        <option value="globe_admin" @if($user->type == 'globe_admin') selected @endif>Global Admin</option>
                                         <option value="inward_group_admin" @if($user->type == 'inward_group_admin') selected @endif>Inward Group Admin</option>
                                         <option value="inward_group_user" @if($user->type == 'inward_group_user') selected @endif>Inward Group User</option>
                                         <option value="outward_group_admin" @if($user->type == 'outward_group_admin') selected @endif>Outward Group Admin</option>

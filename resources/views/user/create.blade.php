@@ -60,7 +60,7 @@
                                 <label class="col-md-4 control-label">Type</label>
                                 <div class="col-md-6">
                                     <select class="form-control" name="type" id="user_type_list">
-                                        <option value="globe_admin">Globe Admin</option>
+                                        <option value="globe_admin">Global Admin</option>
                                         <option value="inward_group_admin">Inward Group Admin</option>
                                         <option value="inward_group_user">Inward Group User</option>
                                         <option value="outward_group_admin">Outward Group Admin</option>
