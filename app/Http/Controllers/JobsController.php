@@ -58,7 +58,7 @@ class JobsController extends Controller
         if(\Auth::user()->company_id){
             if(!$this->checkCreditStatus(\Auth::user()->company_id)){
                 \Session::flash('alert_message', "Sorry, your credits may have expired or not sufficient to create new job, please contact system admin to top-up credit.");
-                return redirect('/home');
+                return redirect()->back();
             }
 
             $company = Company::findOrFail(\Auth::user()->company_id);

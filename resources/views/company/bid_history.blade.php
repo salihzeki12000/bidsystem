@@ -26,9 +26,9 @@
                                     {{ $bid->rfi_status->rfi_status }}
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-success" href="/bid/{{ $bid->id }}" title="View"><span class="glyphicon glyphicon-file"></span></a>
-                                    <a class="btn btn-sm btn-warning" href="/bid/manage_bid_files/{{ $bid->id }}" title="Files"><span class="glyphicon glyphicon-folder-open"></span></a>
-                                    <a class="btn btn-sm btn-primary" href="/bid/{{ $bid->id }}/edit" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+                                    <a class="btn btn-sm btn-success" href="/bid/{{ $bid->id }}" title="View">View</a>
+                                    <a class="btn btn-sm btn-warning" href="/bid/manage_bid_files/{{ $bid->id }}" title="Files">Files</a>
+                                    <a class="btn btn-sm btn-primary" href="/bid/{{ $bid->id }}/edit" title="Edit">Edit</a>
                                 </td>
                             </tr>
                         @endforeach

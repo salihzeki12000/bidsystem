@@ -43,7 +43,7 @@ class BidsController extends Controller
 
         if(\Auth::user()->company_id){
             if(!$this->checkCreditStatus(\Auth::user()->company_id)){
-                \Session::flash('alert_message', "Sorry, your credit may has been expired or not sufficient to create new job, please contact system admin to top-up credit.");
+                \Session::flash('alert_message', "Sorry, your credits may have expired or not sufficient to create new job, please contact system admin to top-up credit.");
                 return redirect()->back();
             }
 
@@ -362,8 +362,17 @@ class BidsController extends Controller
     public function updateBidStatus(Request $request)
     {
         $bid = Bid::find($request->bid_id);
+        $job = Job::find($bid->job_id);
 
-        $this->authorize('ownership', $bid);
+        if(\Auth::user()->type == 'inward_group_user' || \Auth::user()->type == 'inward_group_admin'){
+            if($job->company_id != \Auth::user()->company_id){
+                abort(403);
+            }
+        }else if(\Auth::user()->type == 'outward_group_user' || \Auth::user()->type == 'outward_group_admin'){
+            if($bid->company_id != \Auth::user()->company_id){
+                abort(403);
+            }
+        }
 
         if($request->action){
             $bid->status_id = $request->action;

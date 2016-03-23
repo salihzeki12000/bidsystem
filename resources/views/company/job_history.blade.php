@@ -26,9 +26,9 @@
                                     {{ $job->rfi_status->rfi_status }}
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-success" href="/job/{{ $job->id }}" title="View"><span class="glyphicon glyphicon-file"></span></a>
-                                    <a class="btn btn-sm btn-warning" href="/job/manage_job_files/{{ $job->id }}" title="Files"><span class="glyphicon glyphicon-folder-open"></span></a>
-                                    <a class="btn btn-sm btn-primary" href="/job/{{ $job->id }}/edit" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+                                    <a class="btn btn-sm btn-success" href="/job/{{ $job->id }}" title="View">View</a>
+                                    <a class="btn btn-sm btn-warning" href="/job/manage_job_files/{{ $job->id }}" title="Files">Files</a>
+                                    <a class="btn btn-sm btn-primary" href="/job/{{ $job->id }}/edit" title="Edit">Edit</a>
                                     <a class="btn btn-sm btn-primary" href="/match/{{ $job->id }}" title="Matches">Recommended Match</a>
                                 </td>
                             </tr>
