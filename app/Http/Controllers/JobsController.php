@@ -57,7 +57,7 @@ class JobsController extends Controller
 
         if(\Auth::user()->company_id){
             if(!$this->checkCreditStatus(\Auth::user()->company_id)){
-                \Session::flash('alert_message', "Sorry, your credit may has been expired or not sufficient to create new job, please contact system admin to top-up credit.");
+                \Session::flash('alert_message', "Sorry, your credits may have expired or not sufficient to create new job, please contact system admin to top-up credit.");
                 return redirect('/home');
             }
 
@@ -347,49 +347,9 @@ class JobsController extends Controller
         if(\Auth::user()->company_id){
             $company = Company::findOrFail(\Auth::user()->company_id);
         }
-        $file_types = FileType::all();
 
-        //put files into different categories
-        $invoice_files = array();
-        $dn_files = array();
-        $cn_files = array();
-        $logo_files = array();
-        $profile_files = array();
-        $support_files = array();
-        $registration_files = array();
-        $others_files = array();
-        if(!empty($job->files)){
-            foreach($job->files as $file){
-                switch ($file->file_type_id) {
-                    case '1':
-                        $invoice_files[] = $file;
-                        break;
-                    case '2':
-                        $dn_files[] = $file;
-                        break;
-                    case '3':
-                        $cn_files[] = $file;
-                        break;
-                    case '4':
-                        $logo_files[] = $file;
-                        break;
-                    case '5':
-                        $profile_files[] = $file;
-                        break;
-                    case '6':
-                        $support_files[] = $file;
-                        break;
-                    case '7':
-                        $registration_files[] = $file;
-                        break;
-                    case '8':
-                        $others_files[] = $file;
-                        break;
-                }
-            }
-        }
-
-        return view('job.manage_job_files', compact('job', 'invoice_files', 'dn_files', 'cn_files', 'logo_files', 'profile_files', 'support_files', 'registration_files', 'others_files', 'file_types', 'company'));
+        //dd($job->toArray());
+        return view('job.manage_job_files', compact('job', 'company'));
     }
 
     /**

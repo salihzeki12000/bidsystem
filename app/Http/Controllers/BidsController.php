@@ -276,49 +276,7 @@ class BidsController extends Controller
             $company = Company::findOrFail(\Auth::user()->company_id);
         }
 
-        $file_types = FileType::all();
-
-        //put files into different categories
-        $invoice_files = array();
-        $dn_files = array();
-        $cn_files = array();
-        $logo_files = array();
-        $profile_files = array();
-        $support_files = array();
-        $registration_files = array();
-        $others_files = array();
-        if(!empty($bid->files)){
-            foreach($bid->files as $file){
-                switch ($file->file_type_id) {
-                    case '1':
-                        $invoice_files[] = $file;
-                        break;
-                    case '2':
-                        $dn_files[] = $file;
-                        break;
-                    case '3':
-                        $cn_files[] = $file;
-                        break;
-                    case '4':
-                        $logo_files[] = $file;
-                        break;
-                    case '5':
-                        $profile_files[] = $file;
-                        break;
-                    case '6':
-                        $support_files[] = $file;
-                        break;
-                    case '7':
-                        $registration_files[] = $file;
-                        break;
-                    case '8':
-                        $others_files[] = $file;
-                        break;
-                }
-            }
-        }
-
-        return view('bid.manage_bid_files', compact('bid', 'invoice_files', 'dn_files', 'cn_files', 'logo_files', 'profile_files', 'support_files', 'registration_files', 'others_files', 'file_types', 'company'));
+        return view('bid.manage_bid_files', compact('bid', 'company'));
     }
 
     /**
