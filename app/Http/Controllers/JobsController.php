@@ -171,10 +171,8 @@ class JobsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Job $job)
     {
-        $job = Job::with('company', 'requirements', 'potentials', 'highlights', 'rfi_status', 'files')->find($id);
-
         $new_date = strtotime($job->date);
         $job->date = date('d-m-Y', $new_date);
 

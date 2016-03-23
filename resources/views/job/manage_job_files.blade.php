@@ -1,23 +1,9 @@
-@extends('content_with_sidebar')
-@section('sidebar')
-    @can('inward-user-only')
-    <ul class="nav nav-sidebar">
-        <h4 class="text-center">{{ $company->company_name }}</h4>
-    </ul>
-    @endcan
-    <ul class="nav nav-sidebar">
-        @can('inward-user-only')
-        <li class="active"><a href="/company/job_history/{{ $company->id }}">Job History</a></li>
-        <li><a href="/job_progress_tracking/{{ $company->id }}">Job Progress Tracking</a></li>
-        @endcan
-        <li><a href="/job/create">Create Job<span class="sr-only">(current)</span></a></li>
-    </ul>
-@endsection
+@extends('app')
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <h3 class="pull-left">Documents/Files</h3>
-            <h3 class="pull-right">Job ID: {{ $job->id }}</h3>
+            <h3 class="pull-left">Job ID: {{ $job->id }}</h3>
+            <h3 class="pull-right">Documents/Files</h3>
         </div>
         <hr>
 

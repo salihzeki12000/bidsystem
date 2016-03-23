@@ -126,6 +126,8 @@ Route::post('system/update_jobs','SystemConfigurationsController@updateJobStatus
 
 //system logs
 Route::get('log','SystemLogsController@index');
+Route::post('log','SystemLogsController@showLogs');
+Route::post('log/export','SystemLogsController@exportLogs');
 
 //reports
 Route::get('report/report','ReportsController@index');
